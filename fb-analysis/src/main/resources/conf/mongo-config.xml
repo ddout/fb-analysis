@@ -40,7 +40,7 @@
 	<bean id="mongoDbFactory"
 		class="org.springframework.data.mongodb.core.SimpleMongoDbFactory">
 		<constructor-arg ref="mongo" />
-		<constructor-arg value="HYDZFP_LOCAL_DB" />
+		<constructor-arg value="analysis" />
 		<constructor-arg ref="userCredentials" />
 	</bean>
 
