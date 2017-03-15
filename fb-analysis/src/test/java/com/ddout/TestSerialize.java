@@ -1,7 +1,5 @@
 package com.ddout;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,37 +7,30 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.ddout.fb.service.parse.ICrawlerService;
 import com.ddout.fb.service.parse.ISerializeForDB;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration({ "classpath*:conf/spring*.xml" })
-public class TestCrawler {
+public class TestSerialize {
     @Autowired
-    private ICrawlerService service;
-    @Autowired
-    private ISerializeForDB dbService;
+    private ISerializeForDB service;
 
     /**
      * 解析国家-联赛
      */
     @Test
     public void testParseCountry() {
-	JSONArray array = service.parseCountry();
-	System.out.println(array);
+	service.saveCountry();
     }
 
     /**
-     * 解析赛季-球队
+     * 解析赛季
      */
     @Test
     public void testParseSeason() {
-	List<JSONObject> countrys = dbService.queryCountry();
-	JSONArray array = service.parseSeasonAndTeam(countrys);
-	System.out.println(array);
+
+	// JSONArray array = service.parseSeason(league);
+	// System.out.println(array);
     }
 }
