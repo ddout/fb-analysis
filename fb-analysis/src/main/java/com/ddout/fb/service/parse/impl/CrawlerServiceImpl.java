@@ -8,8 +8,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ddout.fb.service.mongodb.IMongoDBService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
 import net.sf.json.JSONArray;
@@ -17,9 +21,13 @@ import net.sf.json.JSONObject;
 
 @Service
 public class CrawlerServiceImpl implements ICrawlerService {
+    public static final Logger logger = LoggerFactory.getLogger(CrawlerServiceImpl.class);
     public static final String BASE_PATH = "http://www.okooo.com";
     /** 国家uri */
     public static final String BASE_PATH_COUNTRY = "/soccer/";
+    //
+    @Autowired
+    private IMongoDBService mongodbService;
 
     @Override
     public JSONArray parseCountry() {
@@ -39,7 +47,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    parseLeague(countrys, match04, "洲际杯赛");
 	    //
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    logger.error("parse countrys is errot", e);
 	    throw new RuntimeException(e);
 	}
 	return countrys;
@@ -60,7 +68,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    JSONArray leagues = new JSONArray();
 	    //
 	    String matchInfoName = e.getElementsByClass("MatchInfoLogoName").get(0).html().replace("&nbsp;", "").trim();
-	    json.put("matchInfoName", matchInfoName);// 国家名称
+	    json.put("matchName", matchInfoName);// 国家名称
 	    String matchInfoURI = e.select("div.MatchInfoListLogo a").get(0).attr("href");
 	    json.put("matchInfoURI", matchInfoURI);
 	    json.put("region", region);
@@ -78,6 +86,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    //
 	    json.put("league", leagues);
 	    countrys.add(json);
+	    // 存储-db
+	    mongodbService.saveCountry(json);
 	}
     }
 
@@ -87,7 +97,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	//
 	for (JSONObject country : countrys) {
 	    String region = country.getString("region");// 区域
-	    String matchName = country.getString("matchInfoName");// 国家名称
+	    String matchName = country.getString("matchName");// 国家名称
 	    JSONArray leagues = country.getJSONArray("league");
 	    for (int i = 0; i < leagues.size(); i++) {
 		JSONObject league = leagues.getJSONObject(i);
@@ -102,22 +112,22 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		    Elements seasonHtml = doc.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL");
 		    // System.out.println(seasonHtml);
 		    for (Element ses : seasonHtml) {
-			String href = ses.attr("href");
-			String seasonName = ses.html().trim();
+			String href = ses.attr("href");// 赛季uri
+			String seasonName = ses.html().trim();// 赛季名称
 			JSONObject season = new JSONObject();
 			season.put("region", region);
-			season.put("match", matchName);
-			season.put("league", leagueName);
+			season.put("matchName", matchName);
+			season.put("leagueName", leagueName);
 			season.put("uri", href);
 			season.put("seasonName", seasonName);
-			JSONArray teams = parseSeason4Teams(season);
+			JSONArray teams = parseSeason4Teams(season);// 解析当前赛季的team
 			season.put("teams", teams);
 			seasonArr.add(season);
-			System.out.println(season);
+			// 存储-db
+			mongodbService.saveSeasonAndTeam(season);
 		    }
-
 		} catch (IOException e) {
-		    e.printStackTrace();
+		    logger.error("parse SeasonAndTeam is errot", e);
 		}
 	    }
 	}
@@ -127,6 +137,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
     private JSONArray parseSeason4Teams(JSONObject season) {
 	JSONArray teams = new JSONArray();
 	String seasonURI = season.getString("uri");
+	String region = season.getString("region");
+	String matchName = season.getString("matchName");
 	Connection con = Jsoup.connect(BASE_PATH + seasonURI);// 获取请求连接
 	con.header("Referer", BASE_PATH + BASE_PATH_COUNTRY);
 	try {
@@ -139,12 +151,14 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		String teamName = tm.html().trim();
 		JSONObject team = new JSONObject();
 		team.put("uri", href);
-		team.put("teamName", teamName);
+		team.put("region", region);
+		team.put("matchName", matchName);
+		team.put("teamName", teamName);// team名称
 		teams.add(team);
 	    }
 	    //
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    logger.error("parse team is errot", e);
 	}
 	return teams;
     }

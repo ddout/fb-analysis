@@ -9,8 +9,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.ddout.fb.service.mongodb.IMongoDBService;
 import com.ddout.fb.service.parse.ICrawlerService;
-import com.ddout.fb.service.parse.ISerializeForDB;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -22,7 +22,7 @@ public class TestCrawler {
     @Autowired
     private ICrawlerService service;
     @Autowired
-    private ISerializeForDB dbService;
+    private IMongoDBService dbService;
 
     /**
      * 解析国家-联赛
@@ -38,7 +38,7 @@ public class TestCrawler {
      */
     @Test
     public void testParseSeason() {
-	List<JSONObject> countrys = dbService.queryCountry();
+	List<JSONObject> countrys = dbService.queryAllObject(IMongoDBService.COLNAME_COUNTRY);
 	JSONArray array = service.parseSeasonAndTeam(countrys);
 	System.out.println(array);
     }

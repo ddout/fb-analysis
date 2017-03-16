@@ -9,6 +9,8 @@ public interface IMongoDBService {
     public static final String COLNAME_COUNTRY = "country_league";
     /** 赛季 */
     public static final String COLNAME_SEASON = "country_season";
+    /** 球队 */
+    public static final String COLNAME_TEAM = "country_team";
 
     /**
      * 存储对象
@@ -27,5 +29,19 @@ public interface IMongoDBService {
      * @return
      */
     public List<JSONObject> queryAllObject(String collectionName);
+
+    /**
+     * 存储国家对象
+     * 
+     * @param json
+     */
+    public void saveCountry(JSONObject json);
+
+    /**
+     * 存储赛季-球队
+     * 
+     * @param season
+     */
+    public void saveSeasonAndTeam(JSONObject season);
 
 }
