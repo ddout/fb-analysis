@@ -20,4 +20,13 @@ public interface ICrawlerService {
      * @return
      */
     public JSONArray parseSeasonAndTeam(List<JSONObject> countrys);
+
+    /**
+     * 解析比赛
+     * 
+     * @param seasons
+     *            赛季
+     * @return
+     */
+    public void parseGames(List<JSONObject> seasons);
 }

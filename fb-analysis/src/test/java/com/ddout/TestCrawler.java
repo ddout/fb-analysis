@@ -24,6 +24,12 @@ public class TestCrawler {
     @Autowired
     private IMongoDBService dbService;
 
+    @Test
+    public void testDB() {
+	Object o = dbService.queryTest();
+	System.out.println(o);
+    }
+
     /**
      * 解析国家-联赛
      */
@@ -41,5 +47,15 @@ public class TestCrawler {
 	List<JSONObject> countrys = dbService.queryAllObject(IMongoDBService.COLNAME_COUNTRY);
 	JSONArray array = service.parseSeasonAndTeam(countrys);
 	System.out.println(array);
+    }
+
+    /**
+     * 解析比赛
+     */
+    @Test
+    public void testParseGames() {
+	List<JSONObject> countrys = dbService.queryAllObject(IMongoDBService.COLNAME_SEASON);
+	List<JSONObject> cc = countrys.subList(0, 1);
+	service.parseGames(cc);
     }
 }

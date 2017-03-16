@@ -87,4 +87,29 @@ public class MongoDBServiceImpl implements IMongoDBService {
 
     }
 
+    @Override
+    public void saveMatch(JSONObject matchObj) {
+
+	Criteria criatira = new Criteria();
+	criatira.andOperator(Criteria.where("match_id").is(matchObj.getString("match_id")));
+	JSONObject stoeObj = mongoTemplate.findOne(new Query(criatira), JSONObject.class,
+		IMongoDBService.COLNAME_MATCH);
+	if (null == stoeObj) {
+	    saveObject(matchObj, IMongoDBService.COLNAME_MATCH);
+	} else {
+	    logger.debug("!!!!is exists=" + matchObj);
+	}
+    }
+
+    @Override
+    public Object queryTest() {
+	Criteria criatiraTeam = new Criteria();
+	criatiraTeam.andOperator(Criteria.where("round").is("1"), Criteria.where("home_team").is("伯恩利"),
+		Criteria.where("away_team").is("斯旺西"), Criteria.where("title.leagueName").is("欧冠12"));
+	//
+	JSONObject teamObj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class,
+		IMongoDBService.COLNAME_MATCH);
+	return teamObj;
+    }
+
 }

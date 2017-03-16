@@ -11,6 +11,8 @@ public interface IMongoDBService {
     public static final String COLNAME_SEASON = "country_season";
     /** 球队 */
     public static final String COLNAME_TEAM = "country_team";
+    /** 比赛 */
+    public static final String COLNAME_MATCH = "country_match";
 
     /**
      * 存储对象
@@ -43,5 +45,14 @@ public interface IMongoDBService {
      * @param season
      */
     public void saveSeasonAndTeam(JSONObject season);
+
+    /**
+     * 存比赛
+     * 
+     * @param matchObj
+     */
+    public void saveMatch(JSONObject matchObj);
+
+    public Object queryTest();
 
 }
