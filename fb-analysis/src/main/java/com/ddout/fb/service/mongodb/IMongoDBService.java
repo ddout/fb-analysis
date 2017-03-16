@@ -5,6 +5,8 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 public interface IMongoDBService {
+    /** 系统--配置 */
+    public static final String SYSTEM_INFO = "system_info";
     /** 国家/联赛 */
     public static final String COLNAME_COUNTRY = "country_league";
     /** 赛季 */
@@ -13,6 +15,18 @@ public interface IMongoDBService {
     public static final String COLNAME_TEAM = "country_team";
     /** 比赛 */
     public static final String COLNAME_MATCH = "country_match";
+
+    /**
+     * 存储系统信息
+     * 
+     * @param json
+     */
+    public void saveSystemInfo(JSONObject json);
+
+    public JSONObject getSystemInfo();
+    /*
+     * 
+     */
 
     /**
      * 存储对象

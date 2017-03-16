@@ -12,7 +12,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.ddout.fb.service.mongodb.IMongoDBService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,8 +34,7 @@ public class TestCrawler {
      */
     @Test
     public void testParseCountry() {
-	JSONArray array = service.parseCountry();
-	System.out.println(array);
+	service.parseCountry();
     }
 
     /**
@@ -45,8 +43,7 @@ public class TestCrawler {
     @Test
     public void testParseSeason() {
 	List<JSONObject> countrys = dbService.queryAllObject(IMongoDBService.COLNAME_COUNTRY);
-	JSONArray array = service.parseSeasonAndTeam(countrys);
-	System.out.println(array);
+	service.parseSeasonAndTeam(countrys);
     }
 
     /**

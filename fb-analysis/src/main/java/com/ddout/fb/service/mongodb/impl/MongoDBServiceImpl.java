@@ -112,4 +112,18 @@ public class MongoDBServiceImpl implements IMongoDBService {
 	return teamObj;
     }
 
+    @Override
+    public void saveSystemInfo(JSONObject json) {
+	saveObject(json, IMongoDBService.SYSTEM_INFO);
+    }
+
+    @Override
+    public JSONObject getSystemInfo() {
+	Criteria criatiraTeam = new Criteria();
+	criatiraTeam.andOperator(Criteria.where("system_id").is("fb-analysis"));
+	//
+	JSONObject obj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, IMongoDBService.SYSTEM_INFO);
+	return obj;
+    }
+
 }

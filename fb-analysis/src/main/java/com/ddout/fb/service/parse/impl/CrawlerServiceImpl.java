@@ -36,8 +36,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
     }
 
     @Override
-    public JSONArray parseCountry() {
-	JSONArray countrys = new JSONArray();
+    public void parseCountry() {
 	Connection con = getConnect(BASE_PATH + BASE_PATH_COUNTRY);// 获取请求连接
 	con.header("Referer", BASE_PATH);
 	try {
@@ -47,16 +46,15 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    Element match03 = doc.select("#Match03").get(0);// 亚洲
 	    Element match04 = doc.select("#Match04").get(0);// 洲际
 	    //
-	    parseLeague(countrys, match01, "欧洲");
-	    parseLeague(countrys, match02, "美洲");
-	    parseLeague(countrys, match03, "亚洲");
-	    parseLeague(countrys, match04, "洲际杯赛");
+	    parseLeague(match01, "欧洲");
+	    parseLeague(match02, "美洲");
+	    parseLeague(match03, "亚洲");
+	    parseLeague(match04, "洲际杯赛");
 	    //
 	} catch (IOException e) {
 	    logger.error("parse countrys is errot", e);
 	    throw new RuntimeException(e);
 	}
-	return countrys;
     }
 
     /**
@@ -66,7 +64,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
      * @param match01
      * @param region
      */
-    private void parseLeague(JSONArray countrys, Element match01, String region) {
+    private void parseLeague(Element match01, String region) {
 	Elements countrys01 = match01.select(".MatchInfoListPic_L");
 	for (Element e : countrys01) {
 	    //
@@ -91,15 +89,15 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    }
 	    //
 	    json.put("league", leagues);
-	    countrys.add(json);
 	    // 存储-db
 	    mongodbService.saveCountry(json);
+	    //
+	    logger.info("parseLeague end:" + json);
 	}
     }
 
     @Override
-    public JSONArray parseSeasonAndTeam(List<JSONObject> countrys) {
-	JSONArray seasonArr = new JSONArray();
+    public void parseSeasonAndTeam(List<JSONObject> countrys) {
 	//
 	for (JSONObject country : countrys) {
 	    String region = country.getString("region");// 区域
@@ -127,16 +125,15 @@ public class CrawlerServiceImpl implements ICrawlerService {
 			season.put("seasonName", seasonName);
 			JSONArray teams = parseSeason4Teams(season);// 解析当前赛季的team
 			season.put("teams", teams);
-			seasonArr.add(season);
 			// 存储-db
 			mongodbService.saveSeasonAndTeam(season);
+			logger.info("parseSeasonAndTeam end:" + season);
 		    }
 		} catch (IOException e) {
 		    logger.error("parse SeasonAndTeam is errot", e);
 		}
 	    }
 	}
-	return seasonArr;
     }
 
     private JSONArray parseSeason4Teams(JSONObject season) {
@@ -341,6 +338,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		    }
 		    //
 		    mongodbService.saveMatch(matchObj);
+		    //
+		    logger.info("parseGameInfo end:" + matchObj);
 		} catch (Exception e) {
 		    logger.error("parse match error", e);
 		}

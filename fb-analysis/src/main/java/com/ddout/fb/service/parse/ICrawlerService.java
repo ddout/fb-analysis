@@ -2,7 +2,6 @@ package com.ddout.fb.service.parse;
 
 import java.util.List;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public interface ICrawlerService {
@@ -11,7 +10,7 @@ public interface ICrawlerService {
      * 
      * @return
      */
-    public JSONArray parseCountry();
+    public void parseCountry();
 
     /**
      * 解析赛季-球队信息
@@ -19,7 +18,7 @@ public interface ICrawlerService {
      * @param countrys
      * @return
      */
-    public JSONArray parseSeasonAndTeam(List<JSONObject> countrys);
+    public void parseSeasonAndTeam(List<JSONObject> countrys);
 
     /**
      * 解析比赛
