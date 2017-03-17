@@ -41,7 +41,7 @@ public class StartupListener implements ApplicationContextAware {
 		    json.put("initTimeStr", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(initTime));
 		    dbService.saveSystemInfo(json);
 		    systemInfo = dbService.getSystemInfo();
-		} 
+		}
 		//
 		//
 		if (!systemInfo.containsKey("init_country")
@@ -63,8 +63,52 @@ public class StartupListener implements ApplicationContextAware {
 		if (!systemInfo.containsKey("init_SeasonAndTeam")
 			|| !"finally".equals(systemInfo.getString("init_SeasonAndTeam"))) {
 		    log.info("parseSeasonAndTeam   init begin ~~~~~~~~~~~~~~~~~~~~~~");
-		    List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_COUNTRY);
-		    service.parseSeasonAndTeam(countrys);
+		    final List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_COUNTRY);
+		    // 开线程
+		    final int threadMax = 20;
+		    final int threadCount = Math.round(countrys.size() / threadMax);
+		    final int threadLoad = countrys.size() % threadMax;
+		    for (int i = 0; i < threadMax; i++) {
+			final int x = i;
+			new Thread(new Runnable() {
+			    @Override
+			    public void run() {
+				List<JSONObject> subList = countrys.subList(threadCount * x, threadCount * (x + 1));
+				service.parseSeasonAndTeam(subList);
+				//
+				JSONObject threadGroupObj = new JSONObject();
+				threadGroupObj.put("group_id", x);
+				threadGroupObj.put("group_name", ICust.SYSTEM_INIT_GAMES_THREAD_GROUP_1);
+				dbService.saveObject(threadGroupObj, ICust.SYSTEM_INIT_GAMES_THREAD_GROUP_1);
+			    }
+			}).start();
+		    }
+		    if (threadLoad > 0) {
+			new Thread(new Runnable() {
+			    @Override
+			    public void run() {
+				List<JSONObject> subList = countrys.subList(threadCount * threadMax, countrys.size());
+				service.parseSeasonAndTeam(subList);
+				//
+				JSONObject threadGroupObj = new JSONObject();
+				threadGroupObj.put("group_id", threadMax + 1);
+				threadGroupObj.put("group_name", ICust.SYSTEM_INIT_GAMES_THREAD_GROUP_1);
+				dbService.saveObject(threadGroupObj, ICust.SYSTEM_INIT_GAMES_THREAD_GROUP_1);
+			    }
+			}).start();
+		    }
+		    //
+		    Criteria criatira = new Criteria();
+		    criatira.andOperator(Criteria.where("group_name").is(ICust.SYSTEM_INIT_GAMES_THREAD_GROUP_1));
+		    long groupCount = 0;
+		    do {
+			groupCount = dbService.getCount(criatira, ICust.SYSTEM_INIT_GAMES_THREAD_GROUP_1);
+			try {
+			    Thread.sleep(1000 * 10);
+			} catch (InterruptedException e) {
+			    e.printStackTrace();
+			}
+		    } while (groupCount < (threadMax + 1));
 		    //
 		    Criteria criatiraTeam = new Criteria();
 		    criatiraTeam.andOperator(Criteria.where(ICust.SYSTEM_CONFIG_ID).is(ICust.SYSTEM_CONFIG_NAME));
