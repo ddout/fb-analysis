@@ -108,7 +108,7 @@ public class StartupListener implements ApplicationContextAware {
 			} catch (InterruptedException e) {
 			    e.printStackTrace();
 			}
-		    } while (groupCount < (threadMax + 1));
+		    } while (groupCount < threadMax);
 		    //
 		    Criteria criatiraTeam = new Criteria();
 		    criatiraTeam.andOperator(Criteria.where(ICust.SYSTEM_CONFIG_ID).is(ICust.SYSTEM_CONFIG_NAME));
@@ -167,7 +167,7 @@ public class StartupListener implements ApplicationContextAware {
 			} catch (InterruptedException e) {
 			    e.printStackTrace();
 			}
-		    } while (groupCount < (threadMax + 1));
+		    } while (groupCount < threadMax);
 
 		    Criteria criatiraTeam = new Criteria();
 		    criatiraTeam.andOperator(Criteria.where(ICust.SYSTEM_CONFIG_ID).is(ICust.SYSTEM_CONFIG_NAME));
