@@ -400,21 +400,18 @@ public class UpDataServiceImpl implements IUpDataService {
 	    return;
 	}
 	// 预估2W的数据
-	Criteria criatira = new Criteria();
-	criatira.andOperator(Criteria.where("score_result").ne("end"));
-	//
-	long count = mongodbService.getCount(criatira, ICust.COLNAME_MATCH);
-	if (count > 0) {
-	    for (int i = 0; i < count; i += 100) {
-
-	    }
-
-	}
-	List<JSONObject> maths = mongodbService.getObjsForCriteria(criatira, ICust.COLNAME_MATCH);
-	System.out.println(maths.size());
-	for (JSONObject math : maths) {
-	    System.out.println(math);
-	}
+//	Criteria criatira = new Criteria();
+//	criatira.andOperator(Criteria.where("score_result").ne("end"));
+//	//
+//	long count = mongodbService.getCount(criatira, ICust.COLNAME_MATCH);
+//	if (count > 0) {
+//	    
+//	}
+//	List<JSONObject> maths = mongodbService.getObjsForCriteria(criatira, ICust.COLNAME_MATCH);
+//	System.out.println(maths.size());
+//	for (JSONObject math : maths) {
+//	    System.out.println(math);
+//	}
     }
 
 }
