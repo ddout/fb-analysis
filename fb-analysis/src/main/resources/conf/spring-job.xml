@@ -18,7 +18,7 @@
 			<ref bean="methodInvokingJobDetail" />
 		</property>
 		<property name="cronExpression">
-			<value>0 0/5 * * * ?</value>
+			<value>0 15 06 ? * *</value>
 		</property>
 	</bean>
 
