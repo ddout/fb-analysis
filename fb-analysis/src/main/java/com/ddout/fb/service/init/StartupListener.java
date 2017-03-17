@@ -80,7 +80,7 @@ public class StartupListener implements ApplicationContextAware {
 		    log.info("parseGames   init begin ~~~~~~~~~~~~~~~~~~~~~~");
 		    final List<JSONObject> seasons = dbService.queryAllObject(ICust.COLNAME_SEASON);
 		    // 开线程
-		    final int threadMax = 99;
+		    final int threadMax = 39;
 		    final int threadCount = Math.round(seasons.size() / threadMax);
 		    final int threadLoad = seasons.size() % threadMax;
 		    for (int i = 0; i < threadMax; i++) {

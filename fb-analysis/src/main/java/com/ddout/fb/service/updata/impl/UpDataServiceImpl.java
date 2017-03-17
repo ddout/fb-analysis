@@ -399,9 +399,10 @@ public class UpDataServiceImpl implements IUpDataService {
 	    logger.info("System is not inited, updateNewMatch is continue;");
 	    return;
 	}
+	// 预估2W的数据
 	Criteria criatira = new Criteria();
 	criatira.andOperator(Criteria.where("score_result").ne("end"));
-
+	//
 	long count = mongodbService.getCount(criatira, ICust.COLNAME_MATCH);
 	if (count > 0) {
 	    for (int i = 0; i < count; i += 100) {
