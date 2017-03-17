@@ -6,7 +6,7 @@ public interface ICust {
      */
     public static final String SYSTEM_CONFIG_ID = "system_id";
     public static final String SYSTEM_CONFIG_NAME = "fb-analysis";
-    
+    public static final String SYSTEM_INIT_GAMES_THREAD_GROUP = "system_thread_group";
     
     /*
      * website--confg

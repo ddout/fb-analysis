@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.ddout.fb.service.ICust;
@@ -36,7 +37,7 @@ public class UpDataServiceImpl implements IUpDataService {
     @Override
     public void updateNewSeason() {
 	JSONObject systemInfo = mongodbService.getSystemInfo();
-	if (null == systemInfo || !ICust.SYSTEM_CONFIG_NAME.equals(systemInfo.getString(ICust.SYSTEM_CONFIG_ID))) {
+	if (null == systemInfo || !"finally".equals(systemInfo.getString("init_SeasonAndTeam"))) {
 	    logger.info("System is not inited, updateNewSeason is continue;");
 	    return;
 	}
@@ -113,7 +114,7 @@ public class UpDataServiceImpl implements IUpDataService {
     @Override
     public void updateNewMatch() {
 	JSONObject systemInfo = mongodbService.getSystemInfo();
-	if (null == systemInfo || !ICust.SYSTEM_CONFIG_NAME.equals(systemInfo.getString(ICust.SYSTEM_CONFIG_ID))) {
+	if (null == systemInfo || !"finally".equals(systemInfo.getString("init_Games"))) {
 	    logger.info("System is not inited, updateNewMatch is continue;");
 	    return;
 	}
@@ -392,11 +393,26 @@ public class UpDataServiceImpl implements IUpDataService {
     }
 
     @Override
-    public void updateOldLeague() {
+    public void updateOldMatch() {
 	JSONObject systemInfo = mongodbService.getSystemInfo();
-	if (null == systemInfo || !ICust.SYSTEM_CONFIG_NAME.equals(systemInfo.getString(ICust.SYSTEM_CONFIG_ID))) {
-	    logger.info("System is not inited, updateOldLeague is continue;");
+	if (null == systemInfo || !"finally".equals(systemInfo.getString("init_Games"))) {
+	    logger.info("System is not inited, updateNewMatch is continue;");
 	    return;
+	}
+	Criteria criatira = new Criteria();
+	criatira.andOperator(Criteria.where("score_result").ne("end"));
+
+	long count = mongodbService.getCount(criatira, ICust.COLNAME_MATCH);
+	if (count > 0) {
+	    for (int i = 0; i < count; i += 100) {
+
+	    }
+
+	}
+	List<JSONObject> maths = mongodbService.getObjsForCriteria(criatira, ICust.COLNAME_MATCH);
+	System.out.println(maths.size());
+	for (JSONObject math : maths) {
+	    System.out.println(math);
 	}
     }
 

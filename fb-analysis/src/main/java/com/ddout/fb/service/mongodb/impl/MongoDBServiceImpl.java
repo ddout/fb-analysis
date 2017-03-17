@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.ddout.fb.service.ICust;
@@ -25,6 +26,27 @@ public class MongoDBServiceImpl implements IMongoDBService {
     public static final Logger logger = LoggerFactory.getLogger(MongoDBServiceImpl.class);
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Override
+    public Object queryTest() {
+	Criteria criatiraTeam = new Criteria();
+	Map<String, Object> parm = new HashMap<>();
+	parm.put("matchName", "英格兰");
+	parm.put("region", "欧洲");
+	List<Criteria> list = new ArrayList<>();
+	for (Entry<String, Object> en : parm.entrySet()) {
+	    list.add(Criteria.where(en.getKey()).is(en.getValue()));
+	}
+	criatiraTeam.andOperator(list.toArray(new Criteria[list.size()]));
+	JSONObject teamObj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, ICust.COLNAME_COUNTRY);
+	Update update = new Update();
+	JSONArray ar = new JSONArray();
+	ar.add(new JSONObject());
+	ar.add(new JSONObject());
+	update.set("init_Games_thread_group", ar);
+	mongoTemplate.updateMulti(new Query(criatiraTeam), update, ICust.COLNAME_COUNTRY);
+	return teamObj;
+    }
 
     @Override
     public void saveObject(JSONObject obj, String collectionName) {
@@ -104,28 +126,6 @@ public class MongoDBServiceImpl implements IMongoDBService {
     }
 
     @Override
-    public Object queryTest() {
-	Criteria criatiraTeam = new Criteria();
-	// criatiraTeam.andOperator(Criteria.where("round").is("1"),
-	// Criteria.where("home_team").is("赫尔城"),
-	// Criteria.where("away_team").is("莱切斯特城"),
-	// Criteria.where("title.leagueName").is("英超"));
-	//
-	Map<String, Object> parm = new HashMap<>();
-	parm.put("round", "1");
-	parm.put("home_team", "赫尔城");
-	parm.put("away_team", "莱切斯特城");
-	parm.put("title.leagueName", "英超");
-	List<Criteria> list = new ArrayList<>();
-	for (Entry<String, Object> en : parm.entrySet()) {
-	    list.add(Criteria.where(en.getKey()).is(en.getValue()));
-	}
-	criatiraTeam.andOperator(list.toArray(new Criteria[list.size()]));
-	JSONObject teamObj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, ICust.COLNAME_MATCH);
-	return teamObj;
-    }
-
-    @Override
     public void saveSystemInfo(JSONObject json) {
 	saveObject(json, ICust.SYSTEM_INFO);
     }
@@ -151,4 +151,38 @@ public class MongoDBServiceImpl implements IMongoDBService {
 	return obj;
     }
 
+    @Override
+    public List<JSONObject> getObjsForParm(Map<String, Object> parm, String collectionName) {
+	if (null == parm || parm.size() == 0) {
+	    throw new RuntimeException("parm is not null");
+	}
+	Criteria criatiraTeam = new Criteria();
+	List<Criteria> list = new ArrayList<>();
+	for (Entry<String, Object> en : parm.entrySet()) {
+	    list.add(Criteria.where(en.getKey()).is(en.getValue()));
+	}
+	criatiraTeam.andOperator(list.toArray(new Criteria[list.size()]));
+	return mongoTemplate.find(new Query(criatiraTeam), JSONObject.class, collectionName);
+    }
+
+    @Override
+    public List<JSONObject> getObjsForCriteria(Criteria criatira, String collectionName) {
+	if (null == criatira) {
+	    throw new RuntimeException("criatira is not null");
+	}
+	return mongoTemplate.find(new Query(criatira), JSONObject.class, collectionName);
+    }
+
+    @Override
+    public long getCount(Criteria criatira, String collectionName) {
+	if (null == criatira) {
+	    throw new RuntimeException("criatira is not null");
+	}
+	return mongoTemplate.count(new Query(criatira), collectionName);
+    }
+
+    @Override
+    public void updateObj(Criteria criatiraTeam, Update update, String collectionName) {
+	mongoTemplate.updateMulti(new Query(criatiraTeam), update, collectionName);
+    }
 }

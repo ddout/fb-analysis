@@ -12,6 +12,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mongodb.IMongoDBService;
 import com.ddout.fb.service.parse.ICrawlerService;
+import com.ddout.fb.service.updata.IUpDataService;
 
 import net.sf.json.JSONObject;
 
@@ -23,6 +24,9 @@ public class TestCrawler {
     private ICrawlerService service;
     @Autowired
     private IMongoDBService dbService;
+
+    @Autowired
+    private IUpDataService upDataService;
 
     @Test
     public void testDB() {
@@ -55,5 +59,13 @@ public class TestCrawler {
 	List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_SEASON);
 	List<JSONObject> cc = countrys.subList(0, 1);
 	service.parseGames(cc);
+    }
+
+    /**
+     * 更新比赛
+     */
+    @Test
+    public void testUpDataService() {
+	upDataService.updateOldMatch();
     }
 }

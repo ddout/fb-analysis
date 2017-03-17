@@ -14,6 +14,6 @@ public interface IUpDataService {
     /**
      * 更新已有的比赛数据
      */
-    public void updateOldLeague();
+    public void updateOldMatch();
 
 }

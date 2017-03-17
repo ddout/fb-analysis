@@ -3,6 +3,9 @@ package com.ddout.fb.service.mongodb;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
+
 import net.sf.json.JSONObject;
 
 public interface IMongoDBService {
@@ -27,6 +30,26 @@ public interface IMongoDBService {
      * @return
      */
     public JSONObject getOneObj(Map<String, Object> parm, String collectionName);
+
+    /**
+     * 获取集合对象
+     * 
+     * @param parm
+     * @param collectionName
+     * @return
+     */
+    public List<JSONObject> getObjsForParm(Map<String, Object> parm, String collectionName);
+
+    public List<JSONObject> getObjsForCriteria(Criteria criatiraTeam, String collectionName);
+
+    /**
+     * 更新对象
+     * 
+     * @param criatiraTeam
+     * @param update
+     * @param collectionName
+     */
+    public void updateObj(Criteria criatiraTeam, Update update, String collectionName);
 
     /**
      * 存储对象
@@ -68,5 +91,7 @@ public interface IMongoDBService {
     public void saveMatch(JSONObject matchObj);
 
     public Object queryTest();
+
+    public long getCount(Criteria criatira, String colnameMatch);
 
 }

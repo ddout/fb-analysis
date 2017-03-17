@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+	<bean name="FlushTaskJob" class="com.ddout.fb.service.updata.impl.FlushTaskJob" />
 
+	<bean id="methodInvokingJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="FlushTaskJob" />
+		</property>
+		<property name="targetMethod">
+			<value>exec</value>
+		</property>
+	</bean>
+	<!-- 配置触发器 -->
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="methodInvokingJobDetail" />
+		</property>
+		<property name="cronExpression">
+			<value>0 0/5 * * * ?</value>
+		</property>
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<!-- 添加触发器 -->
+		<property name="triggers">
+			<list>
+				<ref local="cronTrigger" />
+			</list>
+		</property>
+	</bean>
 </beans>
