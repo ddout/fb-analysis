@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mongodb.IMongoDBService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
@@ -42,7 +43,7 @@ public class TestCrawler {
      */
     @Test
     public void testParseSeason() {
-	List<JSONObject> countrys = dbService.queryAllObject(IMongoDBService.COLNAME_COUNTRY);
+	List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_COUNTRY);
 	service.parseSeasonAndTeam(countrys);
     }
 
@@ -51,7 +52,7 @@ public class TestCrawler {
      */
     @Test
     public void testParseGames() {
-	List<JSONObject> countrys = dbService.queryAllObject(IMongoDBService.COLNAME_SEASON);
+	List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_SEASON);
 	List<JSONObject> cc = countrys.subList(0, 1);
 	service.parseGames(cc);
     }

@@ -11,6 +11,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import com.cdhy.commons.utils.SysConfigUtil;
+import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mongodb.IMongoDBService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
@@ -23,12 +25,16 @@ public class StartupListener implements ApplicationContextAware {
     private ICrawlerService service;
     @Autowired
     private IMongoDBService dbService;
+    private static final String DEBUG = SysConfigUtil.getInstance().getProperites("debug");
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 	new Thread(new Runnable() {
 	    @Override
 	    public void run() {
+		if (!"false".equals(DEBUG)) {
+		    return;
+		}
 		JSONObject systemInfo = dbService.getSystemInfo();
 		if (null != systemInfo) {
 		    log.info("system is inited!");
@@ -39,19 +45,19 @@ public class StartupListener implements ApplicationContextAware {
 		log.info("parseCountry   parse end!");
 		//
 		log.info("parseSeasonAndTeam   init begin ~~~~~~~~~~~~~~~~~~~~~~");
-		List<JSONObject> countrys = dbService.queryAllObject(IMongoDBService.COLNAME_COUNTRY);
+		List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_COUNTRY);
 		service.parseSeasonAndTeam(countrys);
 		log.info("parseSeasonAndTeam   parse end!");
 		//
 		log.info("parseGames   init begin ~~~~~~~~~~~~~~~~~~~~~~");
-		List<JSONObject> seasons = dbService.queryAllObject(IMongoDBService.COLNAME_SEASON);
+		List<JSONObject> seasons = dbService.queryAllObject(ICust.COLNAME_SEASON);
 		service.parseGames(seasons);
 		log.info("parseGames  parse end!");
 		///
 		///
 		JSONObject json = new JSONObject();
 		Date initTime = new Date();
-		json.put("system_id", "fb-analysis");
+		json.put(ICust.SYSTEM_CONFIG_ID, ICust.SYSTEM_CONFIG_NAME);
 		json.put("initTime", initTime.getTime());
 		json.put("initTimeStr", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(initTime));
 		dbService.saveSystemInfo(json);

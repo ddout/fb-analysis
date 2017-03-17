@@ -1,6 +1,10 @@
 package com.ddout.fb.service.mongodb.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mongodb.IMongoDBService;
 
 import net.sf.json.JSONArray;
@@ -41,10 +46,9 @@ public class MongoDBServiceImpl implements IMongoDBService {
 	Criteria criatira = new Criteria();
 	criatira.andOperator(Criteria.where("region").is(json.getString("region")),
 		Criteria.where("matchName").is(json.getString("matchName")));
-	JSONObject stoeObj = mongoTemplate.findOne(new Query(criatira), JSONObject.class,
-		IMongoDBService.COLNAME_COUNTRY);
+	JSONObject stoeObj = mongoTemplate.findOne(new Query(criatira), JSONObject.class, ICust.COLNAME_COUNTRY);
 	if (null == stoeObj) {
-	    saveObject(json, IMongoDBService.COLNAME_COUNTRY);
+	    saveObject(json, ICust.COLNAME_COUNTRY);
 	} else {
 	    logger.debug(json + " is exists!");
 	}
@@ -57,10 +61,9 @@ public class MongoDBServiceImpl implements IMongoDBService {
 		Criteria.where("matchName").is(season.getString("matchName")),
 		Criteria.where("leagueName").is(season.getString("leagueName")),
 		Criteria.where("seasonName").is(season.getString("seasonName")));
-	JSONObject stoeObj = mongoTemplate.findOne(new Query(criatira), JSONObject.class,
-		IMongoDBService.COLNAME_SEASON);
+	JSONObject stoeObj = mongoTemplate.findOne(new Query(criatira), JSONObject.class, ICust.COLNAME_SEASON);
 	if (null == stoeObj) {
-	    saveObject(season, IMongoDBService.COLNAME_SEASON);
+	    saveObject(season, ICust.COLNAME_SEASON);
 	} else {
 	    logger.debug(season + " is exists!");
 	}
@@ -74,9 +77,9 @@ public class MongoDBServiceImpl implements IMongoDBService {
 			Criteria.where("matchName").is(team.getString("matchName")),
 			Criteria.where("teamName").is(team.getString("teamName")));
 		JSONObject teamObj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class,
-			IMongoDBService.COLNAME_TEAM);
+			ICust.COLNAME_TEAM);
 		if (null == teamObj) {
-		    saveObject(team, IMongoDBService.COLNAME_TEAM);
+		    saveObject(team, ICust.COLNAME_TEAM);
 		} else {
 		    logger.debug(team + " is exists!");
 		}
@@ -92,10 +95,9 @@ public class MongoDBServiceImpl implements IMongoDBService {
 
 	Criteria criatira = new Criteria();
 	criatira.andOperator(Criteria.where("match_id").is(matchObj.getString("match_id")));
-	JSONObject stoeObj = mongoTemplate.findOne(new Query(criatira), JSONObject.class,
-		IMongoDBService.COLNAME_MATCH);
+	JSONObject stoeObj = mongoTemplate.findOne(new Query(criatira), JSONObject.class, ICust.COLNAME_MATCH);
 	if (null == stoeObj) {
-	    saveObject(matchObj, IMongoDBService.COLNAME_MATCH);
+	    saveObject(matchObj, ICust.COLNAME_MATCH);
 	} else {
 	    logger.debug("!!!!is exists=" + matchObj);
 	}
@@ -104,17 +106,28 @@ public class MongoDBServiceImpl implements IMongoDBService {
     @Override
     public Object queryTest() {
 	Criteria criatiraTeam = new Criteria();
-	criatiraTeam.andOperator(Criteria.where("round").is("1"), Criteria.where("home_team").is("伯恩利"),
-		Criteria.where("away_team").is("斯旺西"), Criteria.where("title.leagueName").is("欧冠12"));
+	// criatiraTeam.andOperator(Criteria.where("round").is("1"),
+	// Criteria.where("home_team").is("赫尔城"),
+	// Criteria.where("away_team").is("莱切斯特城"),
+	// Criteria.where("title.leagueName").is("英超"));
 	//
-	JSONObject teamObj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class,
-		IMongoDBService.COLNAME_MATCH);
+	Map<String, Object> parm = new HashMap<>();
+	parm.put("round", "1");
+	parm.put("home_team", "赫尔城");
+	parm.put("away_team", "莱切斯特城");
+	parm.put("title.leagueName", "英超");
+	List<Criteria> list = new ArrayList<>();
+	for (Entry<String, Object> en : parm.entrySet()) {
+	    list.add(Criteria.where(en.getKey()).is(en.getValue()));
+	}
+	criatiraTeam.andOperator(list.toArray(new Criteria[list.size()]));
+	JSONObject teamObj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, ICust.COLNAME_MATCH);
 	return teamObj;
     }
 
     @Override
     public void saveSystemInfo(JSONObject json) {
-	saveObject(json, IMongoDBService.SYSTEM_INFO);
+	saveObject(json, ICust.SYSTEM_INFO);
     }
 
     @Override
@@ -122,7 +135,19 @@ public class MongoDBServiceImpl implements IMongoDBService {
 	Criteria criatiraTeam = new Criteria();
 	criatiraTeam.andOperator(Criteria.where("system_id").is("fb-analysis"));
 	//
-	JSONObject obj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, IMongoDBService.SYSTEM_INFO);
+	JSONObject obj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, ICust.SYSTEM_INFO);
+	return obj;
+    }
+
+    @Override
+    public JSONObject getOneObj(Map<String, Object> parm, String collectionName) {
+	Criteria criatiraTeam = new Criteria();
+	List<Criteria> list = new ArrayList<>();
+	for (Entry<String, Object> en : parm.entrySet()) {
+	    list.add(Criteria.where(en.getKey()).is(en.getValue()));
+	}
+	criatiraTeam.andOperator(list.toArray(new Criteria[list.size()]));
+	JSONObject obj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, collectionName);
 	return obj;
     }
 

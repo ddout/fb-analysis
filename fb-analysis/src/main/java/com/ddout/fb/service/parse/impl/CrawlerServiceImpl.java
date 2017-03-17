@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mongodb.IMongoDBService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
@@ -22,9 +23,7 @@ import net.sf.json.JSONObject;
 @Service
 public class CrawlerServiceImpl implements ICrawlerService {
     public static final Logger logger = LoggerFactory.getLogger(CrawlerServiceImpl.class);
-    public static final String BASE_PATH = "http://www.okooo.com";
-    /** 国家uri */
-    public static final String BASE_PATH_COUNTRY = "/soccer/";
+
     //
     @Autowired
     private IMongoDBService mongodbService;
@@ -37,8 +36,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 
     @Override
     public void parseCountry() {
-	Connection con = getConnect(BASE_PATH + BASE_PATH_COUNTRY);// 获取请求连接
-	con.header("Referer", BASE_PATH);
+	Connection con = getConnect(ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);// 获取请求连接
+	con.header("Referer", ICust.BASE_PATH);
 	try {
 	    Document doc = con.get();
 	    Element match01 = doc.select("#Match01").get(0);// 欧洲
@@ -108,8 +107,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		String leagueName = league.getString("leagueName");// 联赛名称
 		String baseURI = league.getString("leagueURI");// 联赛基准uri
 		//
-		Connection con = getConnect(BASE_PATH + baseURI);// 获取请求连接
-		con.header("Referer", BASE_PATH + BASE_PATH_COUNTRY);
+		Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
+		con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
 		try {
 		    Document doc = con.get();
 		    // 赛季
@@ -141,8 +140,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	String seasonURI = season.getString("uri");
 	String region = season.getString("region");
 	String matchName = season.getString("matchName");
-	Connection con = getConnect(BASE_PATH + seasonURI);// 获取请求连接
-	con.header("Referer", BASE_PATH + BASE_PATH_COUNTRY);
+	Connection con = getConnect(ICust.BASE_PATH + seasonURI);// 获取请求连接
+	con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
 	try {
 	    Document doc = con.get();
 	    // 球队
@@ -174,8 +173,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    String leagueName = season.getString("leagueName");// 英超
 	    String seasonName = season.getString("seasonName");// 英超 16/17 赛季
 	    //
-	    Connection con = getConnect(BASE_PATH + uri);// 获取请求连接
-	    con.header("Referer", BASE_PATH + uri);
+	    Connection con = getConnect(ICust.BASE_PATH + uri);// 获取请求连接
+	    con.header("Referer", ICust.BASE_PATH + uri);
 	    try {
 		Document doc = con.get();
 		// 资格赛-小组赛-淘汰赛
@@ -186,8 +185,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 			try {
 			    String boxUri = atag.attr("href");
 			    String boxName = atag.html().trim();
-			    Connection boxcon = getConnect(BASE_PATH + boxUri);// 获取请求连接
-			    boxcon.header("Referer", BASE_PATH + uri);
+			    Connection boxcon = getConnect(ICust.BASE_PATH + boxUri);// 获取请求连接
+			    boxcon.header("Referer", ICust.BASE_PATH + uri);
 			    Document boxdoc = boxcon.get();
 			    // 分组--A组，B组
 			    Elements buttonBg04_Off = boxdoc.select("div.ButtonBg04_Off");//
@@ -197,8 +196,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 				    try {
 					String groupUri = group.attr("href");
 					String groupName = group.html().trim();
-					Connection groupcon = getConnect(BASE_PATH + groupUri);// 获取请求连接
-					groupcon.header("Referer", BASE_PATH + boxUri);
+					Connection groupcon = getConnect(ICust.BASE_PATH + groupUri);// 获取请求连接
+					groupcon.header("Referer", ICust.BASE_PATH + boxUri);
 					Document groupdoc = groupcon.get();
 					//
 					// 第一轮-第二轮，全部,如果是联赛就是 1,2,3,4...38
@@ -263,8 +262,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		String blockName = block.html().replaceAll("<b>", "").replaceAll("</b>", "").trim();
 		if (!"全部".equals(blockName)) {
 		    try {
-			Connection conn = getConnect(BASE_PATH + blockUri);// 获取请求连接
-			conn.header("Referer", BASE_PATH + blockUri);
+			Connection conn = getConnect(ICust.BASE_PATH + blockUri);// 获取请求连接
+			conn.header("Referer", ICust.BASE_PATH + blockUri);
 			Document doc = conn.get();
 			// 可以直接解析比赛数据了
 			names.put("roundName", blockName);
@@ -356,8 +355,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	for (int i = 0; i < 6; i++) {
 	    String ajaxUri = java.text.MessageFormat.format(ODDS_AJAX_URI, i);
 	    try {
-		Connection conn = getConnect(BASE_PATH + odds_info_uri + ajaxUri);// 获取请求连接
-		conn.header("Referer", BASE_PATH + odds_info_uri);
+		Connection conn = getConnect(ICust.BASE_PATH + odds_info_uri + ajaxUri);// 获取请求连接
+		conn.header("Referer", ICust.BASE_PATH + odds_info_uri);
 		Document doc = conn.get();
 		/// soccer/match/877269/odds/ajax/?page=0&companytype=BaijiaBooks&type=1
 		// Referer:http://www.okooo.com/soccer/match/877269/odds/

@@ -1,20 +1,11 @@
 package com.ddout.fb.service.mongodb;
 
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONObject;
 
 public interface IMongoDBService {
-    /** 系统--配置 */
-    public static final String SYSTEM_INFO = "system_info";
-    /** 国家/联赛 */
-    public static final String COLNAME_COUNTRY = "country_league";
-    /** 赛季 */
-    public static final String COLNAME_SEASON = "country_season";
-    /** 球队 */
-    public static final String COLNAME_TEAM = "country_team";
-    /** 比赛 */
-    public static final String COLNAME_MATCH = "country_match";
 
     /**
      * 存储系统信息
@@ -24,9 +15,18 @@ public interface IMongoDBService {
     public void saveSystemInfo(JSONObject json);
 
     public JSONObject getSystemInfo();
+
     /*
      * 
      */
+    /**
+     * 获取单个对象
+     * 
+     * @param parm
+     * @param collectionName
+     * @return
+     */
+    public JSONObject getOneObj(Map<String, Object> parm, String collectionName);
 
     /**
      * 存储对象
