@@ -41,9 +41,7 @@ public class StartupListener implements ApplicationContextAware {
 		    json.put("initTimeStr", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(initTime));
 		    dbService.saveSystemInfo(json);
 		    systemInfo = dbService.getSystemInfo();
-		} else {
-		    return;
-		}
+		} 
 		//
 		//
 		if (!systemInfo.containsKey("init_country")
