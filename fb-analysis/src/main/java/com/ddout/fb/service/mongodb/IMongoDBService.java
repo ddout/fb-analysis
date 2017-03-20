@@ -42,6 +42,8 @@ public interface IMongoDBService {
 
     public List<JSONObject> getObjsForCriteria(Criteria criatiraTeam, String collectionName);
 
+    public List<JSONObject> getObjsForCriteria(Criteria criatiraTeam, int skip, int limit, String collectionName);
+
     /**
      * 更新对象
      * 

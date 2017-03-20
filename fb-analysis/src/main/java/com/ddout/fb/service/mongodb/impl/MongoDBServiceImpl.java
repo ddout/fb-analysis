@@ -174,6 +174,16 @@ public class MongoDBServiceImpl implements IMongoDBService {
     }
 
     @Override
+    public List<JSONObject> getObjsForCriteria(Criteria criatira, int skip, int limit, String collectionName) {
+	if (null == criatira) {
+	    throw new RuntimeException("criatira is not null");
+	}
+	Query query = new Query(criatira);
+	query.skip(skip).limit(limit);
+	return mongoTemplate.find(query, JSONObject.class, collectionName);
+    }
+
+    @Override
     public long getCount(Criteria criatira, String collectionName) {
 	if (null == criatira) {
 	    throw new RuntimeException("criatira is not null");

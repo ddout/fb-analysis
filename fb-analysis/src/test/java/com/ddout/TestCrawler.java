@@ -1,5 +1,7 @@
 package com.ddout;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -67,5 +69,20 @@ public class TestCrawler {
     @Test
     public void testUpDataService() {
 	upDataService.updateOldMatch();
+    }
+
+    /**
+     * 更新比赛单个
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testParseOldMatch() throws IOException {
+	JSONObject match = dbService.getOneObj(new HashMap<String, Object>() {
+	    {
+		put("match_id", "877172");
+	    }
+	}, ICust.COLNAME_MATCH);
+	upDataService.parseOldMatch(match);
     }
 }

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.ddout.fb.service.ICust;
@@ -237,7 +238,10 @@ public class UpDataServiceImpl implements IUpDataService {
 	//
 	if ("".equals(linkblock)) {// 没有轮次的情况
 	    // 可以直接解析比赛数据了
-	    parseGameInfo(names, groupdoc, infoURI, refererURI);
+	    JSONObject matchObj = parseGameInfo(names, groupdoc, infoURI, refererURI);
+	    if (null != matchObj) {
+		mongodbService.saveMatch(matchObj);
+	    }
 	} else {// 排除全部
 	    for (Element block : linkblock) {
 		String blockUri = block.attr("href");
@@ -249,7 +253,10 @@ public class UpDataServiceImpl implements IUpDataService {
 			Document doc = conn.get();
 			// 可以直接解析比赛数据了
 			names.put("roundName", blockName);
-			parseGameInfo(names, doc, blockUri, blockUri);
+			JSONObject matchObj = parseGameInfo(names, doc, blockUri, blockUri);
+			if (null != matchObj) {
+			    mongodbService.saveMatch(matchObj);
+			}
 		    } catch (Exception e) {
 			logger.error("parse groups is errot", e);
 		    }
@@ -258,8 +265,9 @@ public class UpDataServiceImpl implements IUpDataService {
 	}
     };
 
-    private void parseGameInfo(JSONObject names, Document doc, String infoURI, String refererURI) {
+    private JSONObject parseGameInfo(JSONObject names, Document doc, String infoURI, String refererURI) {
 	// #team_fight_table
+	JSONObject matchResult = null;
 	Elements ddtable = doc.select("#team_fight_table");
 	if (!"".equals(ddtable.toString())) {
 	    // 开始解析比赛
@@ -330,7 +338,7 @@ public class UpDataServiceImpl implements IUpDataService {
 			matchObj.put("odds_info", parseMatchOddsInfo(matchObj));
 		    }
 		    //
-		    mongodbService.saveMatch(matchObj);
+		    matchResult = matchObj;
 		    //
 		    logger.info("parseGameInfo end:" + matchObj);
 		} catch (Exception e) {
@@ -338,6 +346,7 @@ public class UpDataServiceImpl implements IUpDataService {
 		}
 	    }
 	}
+	return matchResult;
     }
 
     private static final String ODDS_AJAX_URI = "ajax/?page={0}&companytype=BaijiaBooks&type=1";
@@ -400,18 +409,132 @@ public class UpDataServiceImpl implements IUpDataService {
 	    return;
 	}
 	// 预估2W的数据
-//	Criteria criatira = new Criteria();
-//	criatira.andOperator(Criteria.where("score_result").ne("end"));
-//	//
-//	long count = mongodbService.getCount(criatira, ICust.COLNAME_MATCH);
-//	if (count > 0) {
-//	    
-//	}
-//	List<JSONObject> maths = mongodbService.getObjsForCriteria(criatira, ICust.COLNAME_MATCH);
-//	System.out.println(maths.size());
-//	for (JSONObject math : maths) {
-//	    System.out.println(math);
-//	}
+	Criteria criatira = new Criteria();
+	criatira.andOperator(Criteria.where("score_result").ne("end"));
+	//
+	long count = mongodbService.getCount(criatira, ICust.COLNAME_MATCH);
+	if (count > 0) {
+	    final List<JSONObject> maths = mongodbService.getObjsForCriteria(criatira, ICust.COLNAME_MATCH);
+	    logger.debug("=" + maths.size());
+	    for (JSONObject match : maths) {
+		try {
+		    parseOldMatch(match);
+		} catch (Exception e) {
+		    logger.error("parse match is errot", e);
+		}
+	    }
+
+	}
     }
 
+    public void parseOldMatch(JSONObject match) throws IOException {
+	String infoURI = match.getString("infoURI");
+	String refererURI = match.getString("refererURI");
+	String match_id = match.getString("match_id");
+	//
+	JSONObject names = match.getJSONObject("title");
+	//
+	Connection conn = getConnect(ICust.BASE_PATH + infoURI);// 获取请求连接
+	conn.header("Referer", ICust.BASE_PATH + refererURI);
+	Document groupdoc = conn.get();
+	// 可以直接解析比赛数据了
+	JSONObject matchObj = parseGameInfoForEnd(match_id, names, groupdoc, infoURI, refererURI);
+	if (null != matchObj) {
+	    // matchObj--有7个对象需要update
+	    Criteria criatira = new Criteria();
+	    criatira.andOperator(Criteria.where("match_id").is(match_id));
+	    Update update = new Update();
+	    String score_result = matchObj.getString("score_result");
+	    if ("end".equals(score_result)) {
+		update.set("score_result", score_result);
+		update.set("match_site", matchObj.getString("match_site"));
+		update.set("home_score", matchObj.getString("home_score"));
+		update.set("away_score", matchObj.getString("away_score"));
+		update.set("odds_init_3", matchObj.getString("odds_init_3"));
+		update.set("odds_init_1", matchObj.getString("odds_init_1"));
+		update.set("odds_init_0", matchObj.getString("odds_init_0"));
+		if (matchObj.containsKey("odds_info")) {
+		    update.set("odds_info", matchObj.getJSONArray("odds_info"));
+		}
+		mongodbService.updateObj(criatira, update, ICust.COLNAME_MATCH);
+	    }
+	}
+    }
+
+    private JSONObject parseGameInfoForEnd(String match_id, JSONObject names, Document doc, String infoURI,
+	    String refererURI) {
+	// #team_fight_table
+	JSONObject matchResult = null;
+	Elements ddtable = doc.select("#team_fight_table");
+	if (!"".equals(ddtable.toString())) {
+	    // 开始解析比赛
+	    Element table = ddtable.get(0);
+	    // System.out.println(names);
+	    // System.out.println(table);
+	    Elements matchs = table.select("tr.BlackWords");
+	    for (Element match : matchs) {
+		String matchid = match.attr("matchid");
+		if (null == matchid || "".equals(matchid)) {
+		    continue;
+		}
+		if (!matchid.equals(match_id)) {
+		    continue;
+		}
+		try {
+		    JSONObject matchObj = new JSONObject();
+		    matchObj.put("title", names);
+		    matchObj.put("infoURI", infoURI);
+		    matchObj.put("refererURI", refererURI);
+		    //
+		    Elements tds = match.select("td");// size=8
+		    matchObj.put("match_id", matchid);
+		    matchObj.put("gameTime", tds.get(0).html().trim());
+		    matchObj.put("round", tds.get(1).html().trim());
+		    matchObj.put("home_team", tds.get(2).html().trim());
+		    matchObj.put("away_team", tds.get(4).html().trim());
+		    // 比分
+		    String bf = tds.get(3).html().trim();
+		    if ("延期".equals(bf) || "VS".equals(bf)) {// 比赛未开始或延期
+			matchObj.put("score_result", bf);
+			matchObj.put("match_site", "");
+			matchObj.put("home_score", "");
+			matchObj.put("away_score", "");
+		    } else {// 已经完赛的
+			Element atag = tds.get(3).select("a").get(0);
+			String scoreStr = atag.select("strong").get(0).html().trim();
+			matchObj.put("score_result", "end");
+			matchObj.put("match_site", atag.attr("href"));
+			String[] scoreArr = scoreStr.split("-");
+			matchObj.put("home_score", scoreArr[0]);
+			matchObj.put("away_score", scoreArr[1]);
+		    }
+		    // 赔率相关
+		    // 平均初赔
+		    String odds_init_3 = tds.get(5).html().trim();
+		    String odds_init_1 = tds.get(6).html().trim();
+		    String odds_init_0 = tds.get(7).html().trim();
+		    matchObj.put("odds_info_uri", "/soccer/match/" + matchid + "/odds/");
+		    if ("-".equals(odds_init_1) || "-".equals(odds_init_0) || "-".equals(odds_init_3)) {
+			matchObj.put("odds_init_3", "-");
+			matchObj.put("odds_init_1", "-");
+			matchObj.put("odds_init_0", "-");
+			matchObj.put("odds_info", null);
+		    } else {
+			matchObj.put("odds_init_3", odds_init_3);
+			matchObj.put("odds_init_1", odds_init_1);
+			matchObj.put("odds_init_0", odds_init_0);
+			matchObj.put("odds_info", parseMatchOddsInfo(matchObj));
+		    }
+		    //
+		    matchResult = matchObj;
+		    //
+		    logger.info("parseGameInfo end:" + matchObj);
+		    break;
+		} catch (Exception e) {
+		    logger.error("parse match error", e);
+		}
+	    }
+	}
+	return matchResult;
+    }
 }
