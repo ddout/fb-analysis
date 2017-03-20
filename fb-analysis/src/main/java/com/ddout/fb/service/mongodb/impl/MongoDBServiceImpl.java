@@ -143,8 +143,10 @@ public class MongoDBServiceImpl implements IMongoDBService {
     public JSONObject getOneObj(Map<String, Object> parm, String collectionName) {
 	Criteria criatiraTeam = new Criteria();
 	List<Criteria> list = new ArrayList<>();
-	for (Entry<String, Object> en : parm.entrySet()) {
-	    list.add(Criteria.where(en.getKey()).is(en.getValue()));
+	if (null != parm) {
+	    for (Entry<String, Object> en : parm.entrySet()) {
+		list.add(Criteria.where(en.getKey()).is(en.getValue()));
+	    }
 	}
 	criatiraTeam.andOperator(list.toArray(new Criteria[list.size()]));
 	JSONObject obj = mongoTemplate.findOne(new Query(criatiraTeam), JSONObject.class, collectionName);
