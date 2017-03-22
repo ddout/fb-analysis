@@ -12,7 +12,6 @@ import com.ddout.fb.service.view.IViewService;
 
 import net.sf.json.JSONObject;
 
-@SuppressWarnings("serial")
 @Service
 public class IViewServiceImpl implements IViewService {
     @Autowired

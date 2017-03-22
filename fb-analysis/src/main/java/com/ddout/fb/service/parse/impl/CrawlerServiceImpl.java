@@ -2,6 +2,7 @@ package com.ddout.fb.service.parse.impl;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cdhy.commons.utils.ParamsUtil;
 import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mysql.ISaveDataService;
 import com.ddout.fb.service.parse.ICrawlerService;
@@ -96,14 +98,14 @@ public class CrawlerServiceImpl implements ICrawlerService {
     }
 
     @Override
-    public void parseSeasonAndTeam(List<JSONObject> leagues) {
+    public void parseSeasonAndTeam(List<Map<String, Object>> leagues) {
 	//
 	for (int i = 0; i < leagues.size(); i++) {
-	    JSONObject league = leagues.get(i);
-	    String region = league.getString("region");// 区域
-	    String matchName = league.getString("matchName");// 国家名称
-	    String leagueName = league.getString("leagueName");// 联赛名称
-	    String baseURI = league.getString("leagueURI");// 联赛基准uri
+	    Map<String, Object> league = leagues.get(i);
+	    String region = ParamsUtil.getString4Map(league, "region");// 区域
+	    String matchName = ParamsUtil.getString4Map(league, "matchName");// 国家名称
+	    String leagueName = ParamsUtil.getString4Map(league, "leagueName");// 联赛名称
+	    String baseURI = ParamsUtil.getString4Map(league, "leagueURI");// 联赛基准uri
 	    //
 	    Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
 	    con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
@@ -161,14 +163,16 @@ public class CrawlerServiceImpl implements ICrawlerService {
     }
 
     @Override
-    public void parseGames(List<JSONObject> seasons) {
+    public void parseGames(List<Map<String, Object>> seasons) {
 	//
-	for (JSONObject season : seasons) {
-	    String uri = season.getString("seasonURI");/// soccer/league/17/schedule/12651/
-	    String region = season.getString("region");// 欧洲
-	    String matchName = season.getString("matchName");// 英格兰
-	    String leagueName = season.getString("leagueName");// 英超
-	    String seasonName = season.getString("seasonName");// 英超 16/17 赛季
+	for (Map<String, Object> season : seasons) {
+	    String uri = ParamsUtil.getString4Map(season, "seasonURI");/// soccer/league/17/schedule/12651/
+	    String region = ParamsUtil.getString4Map(season, "region");// 欧洲
+	    String matchName = ParamsUtil.getString4Map(season, "matchName");// 英格兰
+	    String leagueName = ParamsUtil.getString4Map(season, "leagueName");// 英超
+	    String seasonName = ParamsUtil.getString4Map(season, "seasonName");// 英超
+									       // 16/17
+									       // 赛季
 	    //
 	    Connection con = getConnect(ICust.BASE_PATH + uri);// 获取请求连接
 	    con.header("Referer", ICust.BASE_PATH + uri);

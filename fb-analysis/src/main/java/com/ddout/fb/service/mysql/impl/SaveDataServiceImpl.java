@@ -1,6 +1,7 @@
 package com.ddout.fb.service.mysql.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,6 +162,14 @@ public class SaveDataServiceImpl implements ISaveDataService {
     }
 
     @Override
+    public void updateOldMatch(JSONObject matchObj) {
+	final String match_id = matchObj.getString("match_id");
+	mapper.deleteAddsInfo(match_id);
+	mapper.deleteMath(match_id);
+	saveMatch(matchObj);
+    }
+
+    @Override
     public void saveMatch(JSONObject matchObj) {
 	//
 	final String match_id = matchObj.getString("match_id");
@@ -286,4 +295,11 @@ public class SaveDataServiceImpl implements ISaveDataService {
 	    return "";
 	}
     }
+
+    @Override
+    public List<Map<String, Object>> getEndMatchList() {
+	return mapper.getEndMatchList();
+
+    }
+
 }

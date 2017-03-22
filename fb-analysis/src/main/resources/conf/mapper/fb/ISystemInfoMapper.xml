@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ddout.fb.dao.fb.ISystemInfoMapper">
+
+	<select id="getSystemInfo" parameterType="map" resultType="map">
+		select 
+			system_id,date_format(initTime,'%Y-%m-%d %T') initTime,init_country,init_SeasonAndTeam,init_Games 
+		From t_system_info
+	</select>
+	
+	<!--  -->
+	<insert id="saveSystemInfo" parameterType="map">
+		insert into t_system_info
+		(system_id,initTime)
+		values
+		(
+		 #{system_id,jdbcType=VARCHAR},
+		 now()
+		)
+	</insert>
+	
+	<update id="updateInitCountry">
+		update t_system_info
+		set init_country='finally'
+	</update>
+	<update id="updateInitSeasonAndTeam">
+		update t_system_info
+		set init_SeasonAndTeam='finally'
+	</update>
+	<update id="updateInitGames">
+		update t_system_info
+		set init_Games='finally'
+	</update>
+	
+	<!--  -->
+	<!--  -->
+	<select id="queryAllCountry" parameterType="map" resultType="map">
+		select * From t_country
+	</select>
+	<select id="queryAllSeason" parameterType="map" resultType="map">
+		select * From t_season
+	</select>	
+	
+	<insert id="saveThreadGroup4SeasonAndTeam" parameterType="map">
+		insert into t_ThreadGroup4SeasonAndTeam
+		(thread_id)
+		values
+		(
+		#{group_id,jdbcType=VARCHAR}
+		)
+	</insert>
+	<select id="queryThreadGroup4SeasonAndTeamCount" resultType="int">
+		select count(1) from t_ThreadGroup4SeasonAndTeam
+	</select>
+	<insert id="saveThreadGroup4Games" parameterType="map">
+		insert into t_ThreadGroup4Games
+		(thread_id)
+		values
+		(
+		#{group_id,jdbcType=VARCHAR}
+		)
+	</insert>
+	<select id="queryThreadGroup4GamesCount" resultType="int">
+		select count(1) from t_ThreadGroup4Games
+	</select>
+	
+	<select id="queryAllLeague" resultType="int">
+		select * from t_league
+	</select>
+	
+</mapper>

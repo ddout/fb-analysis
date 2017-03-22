@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ddout.fb.dao.fb.ISaveDataMapper">
 
+
+	<select id="getEndMatchList" parameterType="map" resultType="map">
+		select * from t_match
+		where score_result!='end'
+	</select>
 	<select id="queryCountryOne" parameterType="map" resultType="map">
 		select * From t_country
 		where 1=1
@@ -15,8 +20,8 @@
 			and matchInfoURI=#{matchInfoURI,jdbcType=VARCHAR}
 		</if>
 	</select>
-	
-	
+
+
 	<select id="queryLeagueOne" parameterType="map" resultType="map">
 		select * From t_league
 		where 1=1
@@ -36,8 +41,8 @@
 			and matchName=#{matchName,jdbcType=VARCHAR}
 		</if>
 	</select>
-	
-	
+
+
 	<select id="querySeasonOne" parameterType="map" resultType="map">
 		select * From t_season
 		where 1=1
@@ -60,7 +65,7 @@
 			and leagueName=#{leagueName,jdbcType=VARCHAR}
 		</if>
 	</select>
-	<!--  -->
+	<!-- -->
 	<select id="queryTeamOne" parameterType="map" resultType="map">
 		select * From t_team
 		where 1=1
@@ -80,10 +85,10 @@
 	<select id="queryMatchOne" parameterType="map" resultType="map">
 		select * From t_match
 		where id=#{match_id,jdbcType=VARCHAR}
-		
+
 	</select>
-	
-	<!--  -->
+
+	<!-- -->
 	<insert id="saveCountry" parameterType="map" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into t_country
@@ -98,107 +103,118 @@
 		(country_id,leagueName,leagueURI,region,matchName)
 		values
 		(#{countryId,jdbcType=VARCHAR},#{leagueName,jdbcType=VARCHAR},#{leagueURI,jdbcType=VARCHAR},
-		 #{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR}
+		#{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR}
 		)
 	</insert>
-	
-	
+
+
 	<insert id="saveSeason" parameterType="map" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into t_season
 		(region,matchName,leagueName,league_id,seasonURI,seasonName)
 		values
 		(
-		 #{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR},
-		 #{leagueName,jdbcType=VARCHAR},#{leagueId,jdbcType=NUMERIC},
-		 #{seasonURI,jdbcType=VARCHAR},#{seasonName,jdbcType=VARCHAR}
+		#{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR},
+		#{leagueName,jdbcType=VARCHAR},#{leagueId,jdbcType=NUMERIC},
+		#{seasonURI,jdbcType=VARCHAR},#{seasonName,jdbcType=VARCHAR}
 		)
 	</insert>
-	
+
 	<insert id="saveTeam" parameterType="map" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into t_team
 		(league_id,country_id,teamName,teamURI)
 		values
 		(
-		 #{leagueId,jdbcType=NUMERIC},
-		 #{countryId,jdbcType=NUMERIC},
-		 #{teamName,jdbcType=VARCHAR},
-		 #{teamURI,jdbcType=NUMERIC}
+		#{leagueId,jdbcType=NUMERIC},
+		#{countryId,jdbcType=NUMERIC},
+		#{teamName,jdbcType=VARCHAR},
+		#{teamURI,jdbcType=NUMERIC}
 		)
 	</insert>
-	
-	
-	<insert id="saveSeasonTeam" parameterType="map" useGeneratedKeys="true"
-		keyProperty="id">
+
+
+	<insert id="saveSeasonTeam" parameterType="map"
+		useGeneratedKeys="true" keyProperty="id">
 		insert into t_season_team
 		(season_id,team_id)
 		values
 		(
-		 #{seasonId,jdbcType=NUMERIC},
-		 #{teamId,jdbcType=NUMERIC}
+		#{seasonId,jdbcType=NUMERIC},
+		#{teamId,jdbcType=NUMERIC}
 		)
 	</insert>
-	
+
 	<insert id="saveMatch" parameterType="map" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into t_match
 		(
-		 id,season_id,
-		 infoURI,refererURI,
-		 gameTime,boxName,
-		 groupName,roundName,
-		 home_team,away_team,
-		 home_score,away_score,
-		 score_result,match_site,
-		 match_result,odds_info_URI,
-		 odds_info_3,odds_info_1,odds_info_0,
-		 region,matchName,leagueName,seasonName
+		id,season_id,
+		infoURI,refererURI,
+		gameTime,boxName,
+		groupName,roundName,
+		home_team,away_team,
+		home_score,away_score,
+		score_result,match_site,
+		match_result,odds_info_URI,
+		odds_info_3,odds_info_1,odds_info_0,
+		region,matchName,leagueName,seasonName
 		)
 		values
 		(
-		 #{match_id,jdbcType=VARCHAR},#{seasonId,jdbcType=NUMERIC},
-		 #{infoURI,jdbcType=VARCHAR},#{refererURI,jdbcType=VARCHAR},
-		 #{gameTime,jdbcType=VARCHAR},#{boxName,jdbcType=VARCHAR},
-		 #{groupName,jdbcType=VARCHAR},#{roundName,jdbcType=VARCHAR},
-		 #{home_team,jdbcType=VARCHAR},#{away_team,jdbcType=VARCHAR},
-		 #{home_score,jdbcType=NUMERIC},#{away_score,jdbcType=NUMERIC},
-		 #{score_result,jdbcType=VARCHAR},#{match_site,jdbcType=VARCHAR},
-		 #{match_result,jdbcType=NUMERIC},#{odds_info_URI,jdbcType=VARCHAR},
-		 #{odds_info_3,jdbcType=NUMERIC},#{odds_info_1,jdbcType=NUMERIC},
-		 #{odds_info_0,jdbcType=NUMERIC},
-		 #{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR},
-		 #{leagueName,jdbcType=VARCHAR},#{seasonName,jdbcType=VARCHAR}
+		#{match_id,jdbcType=VARCHAR},#{seasonId,jdbcType=NUMERIC},
+		#{infoURI,jdbcType=VARCHAR},#{refererURI,jdbcType=VARCHAR},
+		#{gameTime,jdbcType=VARCHAR},#{boxName,jdbcType=VARCHAR},
+		#{groupName,jdbcType=VARCHAR},#{roundName,jdbcType=VARCHAR},
+		#{home_team,jdbcType=VARCHAR},#{away_team,jdbcType=VARCHAR},
+		#{home_score,jdbcType=NUMERIC},#{away_score,jdbcType=NUMERIC},
+		#{score_result,jdbcType=VARCHAR},#{match_site,jdbcType=VARCHAR},
+		#{match_result,jdbcType=NUMERIC},#{odds_info_URI,jdbcType=VARCHAR},
+		#{odds_info_3,jdbcType=NUMERIC},#{odds_info_1,jdbcType=NUMERIC},
+		#{odds_info_0,jdbcType=NUMERIC},
+		#{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR},
+		#{leagueName,jdbcType=VARCHAR},#{seasonName,jdbcType=VARCHAR}
 		)
 	</insert>
-	
-	<!--  -->
-	<!--  -->
+
+	<!-- -->
+	<!-- -->
 	<select id="queryAddsInfoOne" parameterType="map" resultType="map">
 		select * From t_odds_info
 		where match_id=#{matchId,jdbcType=VARCHAR}
-		  and makerID=#{makerID,jdbcType=VARCHAR}
+		and makerID=#{makerID,jdbcType=VARCHAR}
 	</select>
 	<insert id="saveAddsInfo" parameterType="map" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into t_odds_info
 		(
-		 match_id,makerID,companyName,providerName,
-		 payoff,
-		 start_home,start_draw,start_away,
-		 end_home,end_draw,end_away,
-		 radio_home,radio_draw,radio_away,
-		 kelly_home,kelly_draw,kelly_away
+		match_id,makerID,companyName,providerName,
+		payoff,
+		start_home,start_draw,start_away,
+		end_home,end_draw,end_away,
+		radio_home,radio_draw,radio_away,
+		kelly_home,kelly_draw,kelly_away
 		)
 		values
 		(
-		 #{matchId,jdbcType=VARCHAR},#{makerID,jdbcType=VARCHAR},
-		 #{companyName,jdbcType=VARCHAR},#{providerName,jdbcType=VARCHAR},
-		 #{payoff,jdbcType=NUMERIC},
-		 #{start_home,jdbcType=NUMERIC}, #{start_draw,jdbcType=NUMERIC}, #{start_away,jdbcType=NUMERIC},
-		 #{end_home,jdbcType=NUMERIC}, #{end_draw,jdbcType=NUMERIC}, #{end_away,jdbcType=NUMERIC},
-		 #{radio_home,jdbcType=NUMERIC}, #{radio_draw,jdbcType=NUMERIC}, #{radio_away,jdbcType=NUMERIC},
-		 #{kelly_home,jdbcType=NUMERIC}, #{kelly_draw,jdbcType=NUMERIC}, #{kelly_away,jdbcType=NUMERIC}
-		)		
+		#{matchId,jdbcType=VARCHAR},#{makerID,jdbcType=VARCHAR},
+		#{companyName,jdbcType=VARCHAR},#{providerName,jdbcType=VARCHAR},
+		#{payoff,jdbcType=NUMERIC},
+		#{start_home,jdbcType=NUMERIC}, #{start_draw,jdbcType=NUMERIC}, #{start_away,jdbcType=NUMERIC},
+		#{end_home,jdbcType=NUMERIC}, #{end_draw,jdbcType=NUMERIC},
+		#{end_away,jdbcType=NUMERIC},
+		#{radio_home,jdbcType=NUMERIC}, #{radio_draw,jdbcType=NUMERIC}, #{radio_away,jdbcType=NUMERIC},
+		#{kelly_home,jdbcType=NUMERIC}, #{kelly_draw,jdbcType=NUMERIC},
+		#{kelly_away,jdbcType=NUMERIC}
+		)
 	</insert>
+	
+	<delete id="deleteMath" parameterType="string">
+		delete t_match
+		where id=#{match_id}
+	</delete>
+	<delete id="deleteAddsInfo" parameterType="string">
+		delete t_odds_info
+		where match_id=#{match_id}
+	</delete>
 </mapper>

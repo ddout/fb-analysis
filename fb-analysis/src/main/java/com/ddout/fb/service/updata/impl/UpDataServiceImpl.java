@@ -1,6 +1,8 @@
 package com.ddout.fb.service.updata.impl;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -12,7 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cdhy.commons.utils.ParamsUtil;
+import com.ddout.fb.dao.fb.ISystemInfoMapper;
 import com.ddout.fb.service.ICust;
+import com.ddout.fb.service.mysql.ISaveDataService;
 import com.ddout.fb.service.updata.IUpDataService;
 
 import net.sf.json.JSONArray;
@@ -22,7 +27,9 @@ import net.sf.json.JSONObject;
 public class UpDataServiceImpl implements IUpDataService {
     public static final Logger logger = LoggerFactory.getLogger(UpDataServiceImpl.class);
     @Autowired
-//    private IMongoDBService mongodbService;
+    private ISystemInfoMapper systemInfoMapper;
+    @Autowired
+    private ISaveDataService dataService;
 
     private static Connection getConnect(String url) {
 	Connection conn = Jsoup.connect(url);// 获取请求连接
@@ -32,56 +39,50 @@ public class UpDataServiceImpl implements IUpDataService {
 
     @Override
     public void updateNewSeason() {
-//	JSONObject systemInfo = mongodbService.getSystemInfo();
-//	if (null == systemInfo || !"finally".equals(systemInfo.getString("init_SeasonAndTeam"))) {
-//	    logger.info("System is not inited, updateNewSeason is continue;");
-//	    return;
-//	}
-//
-//	List<JSONObject> countrys = mongodbService.queryAllObject(ICust.COLNAME_COUNTRY);
-//	for (JSONObject country : countrys) {
-//	    JSONArray leagues = country.getJSONArray("league");
-//	    if (null != leagues) {
-//		String region = country.getString("region");// 区域
-//		String matchName = country.getString("matchName");// 国家名称
-//		for (int i = 0; i < leagues.size(); i++) {
-//		    JSONObject league = leagues.getJSONObject(i);
-//		    String leagueName = league.getString("leagueName");// 联赛名称
-//		    String baseURI = league.getString("leagueURI");// 联赛基准uri
-//		    //
-//		    Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
-//		    con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
-//		    try {
-//			Document doc = con.get();
-//			// 赛季
-//			Elements seasonHtml = doc.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL");
-//			for (Element ses : seasonHtml) {
-//			    String href = ses.attr("href");// 赛季uri
-//			    String seasonName = ses.html().trim();// 赛季名称
-//			    JSONObject season = new JSONObject();
-//			    season.put("region", region);
-//			    season.put("matchName", matchName);
-//			    season.put("leagueName", leagueName);
-//			    season.put("uri", href);
-//			    season.put("seasonName", seasonName);
-//			    JSONArray teams = parseSeason4Teams(season);// 解析当前赛季的team
-//			    season.put("teams", teams);
-//			    // 存储-db
-//			    mongodbService.saveSeasonAndTeam(season);
-//			    logger.info("parseSeasonAndTeam end:" + season);
-//			}
-//		    } catch (IOException e) {
-//			logger.error("parse SeasonAndTeam is errot", e);
-//		    }
-//		}
-//	    }
-//	}
+	Map<String, Object> systemInfo = systemInfoMapper.getSystemInfo();
+	if (null == systemInfo || !"finally".equals(ParamsUtil.getString4Map(systemInfo, "init_SeasonAndTeam"))) {
+	    logger.info("System is not inited, updateNewSeason is continue;");
+	    return;
+	}
+
+	List<Map<String, Object>> leagues = systemInfoMapper.queryAllLeague();
+	for (Map<String, Object> league : leagues) {
+	    String region = ParamsUtil.getString4Map(league, "region");// 联赛名称
+	    String matchName = ParamsUtil.getString4Map(league, "matchName");// 联赛名称
+	    String leagueName = ParamsUtil.getString4Map(league, "leagueName");// 联赛名称
+	    String baseURI = ParamsUtil.getString4Map(league, "leagueURI");// 联赛基准uri
+	    //
+	    Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
+	    con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
+	    try {
+		Document doc = con.get();
+		// 赛季
+		Elements seasonHtml = doc.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL");
+		for (Element ses : seasonHtml) {
+		    String href = ses.attr("href");// 赛季uri
+		    String seasonName = ses.html().trim();// 赛季名称
+		    JSONObject season = new JSONObject();
+		    season.put("region", region);
+		    season.put("matchName", matchName);
+		    season.put("leagueName", leagueName);
+		    season.put("seasonURI", href);
+		    season.put("seasonName", seasonName);
+		    JSONArray teams = parseSeason4Teams(season);// 解析当前赛季的team
+		    season.put("teams", teams);
+		    // 存储-db
+		    dataService.saveSeasonAndTeam(season);
+		    logger.info("parseSeasonAndTeam end:" + season);
+		}
+	    } catch (IOException e) {
+		logger.error("parse SeasonAndTeam is errot", e);
+	    }
+	}
 
     }
 
     private JSONArray parseSeason4Teams(JSONObject season) {
 	JSONArray teams = new JSONArray();
-	String seasonURI = season.getString("uri");
+	String seasonURI = season.getString("seasonURI");
 	String region = season.getString("region");
 	String matchName = season.getString("matchName");
 	Connection con = getConnect(ICust.BASE_PATH + seasonURI);// 获取请求连接
@@ -94,7 +95,7 @@ public class UpDataServiceImpl implements IUpDataService {
 		String href = tm.attr("href");
 		String teamName = tm.html().trim();
 		JSONObject team = new JSONObject();
-		team.put("uri", href);
+		team.put("teamURI", href);
 		team.put("region", region);
 		team.put("matchName", matchName);
 		team.put("teamName", teamName);// team名称
@@ -109,41 +110,35 @@ public class UpDataServiceImpl implements IUpDataService {
 
     @Override
     public void updateNewMatch() {
-//	JSONObject systemInfo = mongodbService.getSystemInfo();
-//	if (null == systemInfo || !"finally".equals(systemInfo.getString("init_Games"))) {
-//	    logger.info("System is not inited, updateNewMatch is continue;");
-//	    return;
-//	}
-//	//
-//	List<JSONObject> countrys = mongodbService.queryAllObject(ICust.COLNAME_COUNTRY);
-//	for (JSONObject country : countrys) {
-//	    JSONArray leagues = country.getJSONArray("league");
-//	    if (null != leagues) {
-//		String region = country.getString("region");// 区域
-//		String matchName = country.getString("matchName");// 国家名称
-//		for (int i = 0; i < leagues.size(); i++) {
-//		    JSONObject league = leagues.getJSONObject(i);
-//		    String leagueName = league.getString("leagueName");// 联赛名称
-//		    String baseURI = league.getString("leagueURI");// 联赛基准uri
-//		    //
-//		    Connection conBase = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
-//		    conBase.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
-//		    try {
-//			Document docBase = conBase.get();
-//			// 最新赛季
-//			Element ses = docBase.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL").get(0);
-//			String uri = ses.attr("href");// 赛季uri
-//			String seasonName = ses.html().trim();// 赛季名称
-//			//
-//			//
-//			parseSeasonMatch(region, matchName, leagueName, uri, seasonName);
-//			//
-//		    } catch (IOException e) {
-//			logger.error("parse SeasonAndTeam is errot", e);
-//		    }
-//		}
-//	    }
-//	}
+	Map<String, Object> systemInfo = systemInfoMapper.getSystemInfo();
+	if (null == systemInfo || !"finally".equals(ParamsUtil.getString4Map(systemInfo, "init_Games"))) {
+	    logger.info("System is not inited, updateNewMatch is continue;");
+	    return;
+	}
+	//
+	List<Map<String, Object>> leagues = systemInfoMapper.queryAllLeague();
+	for (Map<String, Object> league : leagues) {
+	    String region = ParamsUtil.getString4Map(league, "region");// 联赛名称
+	    String matchName = ParamsUtil.getString4Map(league, "matchName");// 联赛名称
+	    String leagueName = ParamsUtil.getString4Map(league, "leagueName");// 联赛名称
+	    String baseURI = ParamsUtil.getString4Map(league, "leagueURI");// 联赛基准uri
+	    //
+	    Connection conBase = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
+	    conBase.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
+	    try {
+		Document docBase = conBase.get();
+		// 最新赛季
+		Element ses = docBase.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL").get(0);
+		String uri = ses.attr("href");// 赛季uri
+		String seasonName = ses.html().trim();// 赛季名称
+		//
+		//
+		parseSeasonMatch(region, matchName, leagueName, uri, seasonName);
+		//
+	    } catch (IOException e) {
+		logger.error("parse SeasonAndTeam is errot", e);
+	    }
+	}
     }
 
     private void parseSeasonMatch(String region, String matchName, String leagueName, String uri, String seasonName) {
@@ -235,7 +230,7 @@ public class UpDataServiceImpl implements IUpDataService {
 	    // 可以直接解析比赛数据了
 	    JSONObject matchObj = parseGameInfo(names, groupdoc, infoURI, refererURI);
 	    if (null != matchObj) {
-		//mongodbService.saveMatch(matchObj);
+		dataService.saveMatch(matchObj);
 	    }
 	} else {// 排除全部
 	    for (Element block : linkblock) {
@@ -250,7 +245,7 @@ public class UpDataServiceImpl implements IUpDataService {
 			names.put("roundName", blockName);
 			JSONObject matchObj = parseGameInfo(names, doc, blockUri, blockUri);
 			if (null != matchObj) {
-			    //mongodbService.saveMatch(matchObj);
+			    dataService.saveMatch(matchObj);
 			}
 		    } catch (Exception e) {
 			logger.error("parse groups is errot", e);
@@ -275,18 +270,6 @@ public class UpDataServiceImpl implements IUpDataService {
 		if (null == matchid || "".equals(matchid)) {
 		    continue;
 		}
-		// matchid
-		final String match_id = matchid;
-//		JSONObject matchDBObj = mongodbService.getOneObj(new HashMap<String, Object>() {
-//		    private static final long serialVersionUID = -6373511198337414764L;
-//
-//		    {
-//			put("match_id", match_id);
-//		    }
-//		}, ICust.COLNAME_MATCH);
-//		if (null != matchDBObj) {
-//		    continue;
-//		}
 		try {
 		    JSONObject matchObj = new JSONObject();
 		    matchObj.put("title", names);
@@ -322,14 +305,14 @@ public class UpDataServiceImpl implements IUpDataService {
 		    String odds_init_0 = tds.get(7).html().trim();
 		    matchObj.put("odds_info_uri", "/soccer/match/" + matchid + "/odds/");
 		    if ("-".equals(odds_init_1) || "-".equals(odds_init_0) || "-".equals(odds_init_3)) {
-			matchObj.put("odds_init_3", "-");
-			matchObj.put("odds_init_1", "-");
-			matchObj.put("odds_init_0", "-");
+			matchObj.put("odds_info_3", null);
+			matchObj.put("odds_info_1", null);
+			matchObj.put("odds_info_0", null);
 			matchObj.put("odds_info", null);
 		    } else {
-			matchObj.put("odds_init_3", odds_init_3);
-			matchObj.put("odds_init_1", odds_init_1);
-			matchObj.put("odds_init_0", odds_init_0);
+			matchObj.put("odds_info_3", odds_init_3);
+			matchObj.put("odds_info_1", odds_init_1);
+			matchObj.put("odds_info_0", odds_init_0);
 			matchObj.put("odds_info", parseMatchOddsInfo(matchObj));
 		    }
 		    //
@@ -369,7 +352,7 @@ public class UpDataServiceImpl implements IUpDataService {
 		    data.put("companyName", jsonObj.getString("CompanyName"));// 公司名称
 		    data.put("providerName", jsonObj.getString("ProviderName"));// 供应商名称
 		    //
-		    data.put("Payoff", jsonObj.getString("Payoff"));// 赔付率
+		    data.put("payoff", jsonObj.getString("Payoff"));// 赔付率
 		    JSONObject start = jsonObj.getJSONObject("Start");// 初始指数
 		    data.put("start_home", start.getString("home"));
 		    data.put("start_draw", start.getString("draw"));
@@ -398,36 +381,36 @@ public class UpDataServiceImpl implements IUpDataService {
 
     @Override
     public void updateOldMatch() {
-//	JSONObject systemInfo = mongodbService.getSystemInfo();
-//	if (null == systemInfo || !"finally".equals(systemInfo.getString("init_Games"))) {
-//	    logger.info("System is not inited, updateNewMatch is continue;");
-//	    return;
-//	}
-//	// 预估2W的数据
-//	Criteria criatira = new Criteria();
-//	criatira.andOperator(Criteria.where("score_result").ne("end"));
-//	//
-//	long count = mongodbService.getCount(criatira, ICust.COLNAME_MATCH);
-//	if (count > 0) {
-//	    final List<JSONObject> maths = mongodbService.getObjsForCriteria(criatira, ICust.COLNAME_MATCH);
-//	    logger.debug("=" + maths.size());
-//	    for (JSONObject match : maths) {
-//		try {
-//		    parseOldMatch(match);
-//		} catch (Exception e) {
-//		    logger.error("parse match is errot", e);
-//		}
-//	    }
-//
-//	}
+	Map<String, Object> systemInfo = systemInfoMapper.getSystemInfo();
+	if (null == systemInfo || !"finally".equals(ParamsUtil.getString4Map(systemInfo, "init_Games"))) {
+	    logger.info("System is not inited, updateNewMatch is continue;");
+	    return;
+	}
+	// 预估1W的数据
+	final List<Map<String, Object>> maths = dataService.getEndMatchList();
+	logger.debug("=" + maths.size());
+	for (Map<String, Object> match : maths) {
+	    try {
+		parseOldMatch(JSONObject.fromObject(match));
+	    } catch (Exception e) {
+		logger.error("parse match is errot", e);
+	    }
+	}
+
     }
 
-    public void parseOldMatch(JSONObject match) throws IOException {
+    private void parseOldMatch(JSONObject match) throws IOException {
 	String infoURI = match.getString("infoURI");
 	String refererURI = match.getString("refererURI");
-	String match_id = match.getString("match_id");
+	String match_id = match.getString("id");
 	//
-	JSONObject names = match.getJSONObject("title");
+	JSONObject names = new JSONObject();
+	names.put("region", match.getString("region"));
+	names.put("matchName", match.getString("matchName"));
+	names.put("leagueName", match.getString("leagueName"));
+	names.put("seasonName", match.getString("seasonName"));
+	names.put("boxName", match.getString("boxName"));
+	names.put("groupName", match.getString("groupName"));
 	//
 	Connection conn = getConnect(ICust.BASE_PATH + infoURI);// 获取请求连接
 	conn.header("Referer", ICust.BASE_PATH + refererURI);
@@ -435,24 +418,10 @@ public class UpDataServiceImpl implements IUpDataService {
 	// 可以直接解析比赛数据了
 	JSONObject matchObj = parseGameInfoForEnd(match_id, names, groupdoc, infoURI, refererURI);
 	if (null != matchObj) {
-//	    // matchObj--有7个对象需要update
-//	    Criteria criatira = new Criteria();
-//	    criatira.andOperator(Criteria.where("match_id").is(match_id));
-//	    Update update = new Update();
-//	    String score_result = matchObj.getString("score_result");
-//	    if ("end".equals(score_result)) {
-//		update.set("score_result", score_result);
-//		update.set("match_site", matchObj.getString("match_site"));
-//		update.set("home_score", matchObj.getString("home_score"));
-//		update.set("away_score", matchObj.getString("away_score"));
-//		update.set("odds_init_3", matchObj.getString("odds_init_3"));
-//		update.set("odds_init_1", matchObj.getString("odds_init_1"));
-//		update.set("odds_init_0", matchObj.getString("odds_init_0"));
-//		if (matchObj.containsKey("odds_info")) {
-//		    update.set("odds_info", matchObj.getJSONArray("odds_info"));
-//		}
-//		mongodbService.updateObj(criatira, update, ICust.COLNAME_MATCH);
-//	    }
+	    String score_result = matchObj.getString("score_result");
+	    if ("end".equals(score_result)) {
+		dataService.updateOldMatch(matchObj);
+	    }
 	}
     }
 
@@ -510,14 +479,14 @@ public class UpDataServiceImpl implements IUpDataService {
 		    String odds_init_0 = tds.get(7).html().trim();
 		    matchObj.put("odds_info_uri", "/soccer/match/" + matchid + "/odds/");
 		    if ("-".equals(odds_init_1) || "-".equals(odds_init_0) || "-".equals(odds_init_3)) {
-			matchObj.put("odds_init_3", "-");
-			matchObj.put("odds_init_1", "-");
-			matchObj.put("odds_init_0", "-");
+			matchObj.put("odds_info_3", null);
+			matchObj.put("odds_info_1", null);
+			matchObj.put("odds_info_0", null);
 			matchObj.put("odds_info", null);
 		    } else {
-			matchObj.put("odds_init_3", odds_init_3);
-			matchObj.put("odds_init_1", odds_init_1);
-			matchObj.put("odds_init_0", odds_init_0);
+			matchObj.put("odds_info_3", odds_init_3);
+			matchObj.put("odds_info_1", odds_init_1);
+			matchObj.put("odds_info_0", odds_init_0);
 			matchObj.put("odds_info", parseMatchOddsInfo(matchObj));
 		    }
 		    //

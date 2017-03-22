@@ -1,7 +1,9 @@
 package com.ddout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +55,8 @@ public class TestCrawler {
     @Test
     public void testParseSeasonAndTeam() {
 	try {
-	    List<JSONObject> leagues = new ArrayList<JSONObject>();
-	    JSONObject league = new JSONObject();
+	    List<Map<String, Object>> leagues = new ArrayList<Map<String, Object>>();
+	    Map<String, Object> league = new HashMap<String, Object>();
 	    league.put("region", "欧洲");
 	    league.put("matchName", "英格兰");
 	    league.put("leagueName", "英超");
@@ -70,8 +72,8 @@ public class TestCrawler {
     @Test
     public void testParseMatch() {
 	try {
-	    List<JSONObject> seasons = new ArrayList<JSONObject>();
-	    JSONObject season = new JSONObject();
+	    List<Map<String, Object>> seasons = new ArrayList<Map<String, Object>>();
+	    Map<String, Object> season = new HashMap<String, Object>();
 	    season.put("region", "欧洲");
 	    season.put("matchName", "英格兰");
 	    season.put("leagueName", "英超");
@@ -84,4 +86,5 @@ public class TestCrawler {
 	    throw e;
 	}
     }
+
 }

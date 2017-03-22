@@ -1,6 +1,7 @@
 package com.ddout.fb.dao.fb;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public interface ISaveDataMapper {
@@ -30,5 +31,11 @@ public interface ISaveDataMapper {
     Map<String, Object> queryAddsInfoOne(Map<String, Object> addsInfoMap);
 
     void saveAddsInfo(Map<String, Object> addsInfoMap);
+
+    List<Map<String, Object>> getEndMatchList();
+
+    void deleteMath(String match_id);
+
+    void deleteAddsInfo(String match_id);
 
 }

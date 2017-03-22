@@ -1,8 +1,7 @@
 package com.ddout.fb.service.parse;
 
 import java.util.List;
-
-import net.sf.json.JSONObject;
+import java.util.Map;
 
 public interface ICrawlerService {
     /**
@@ -18,7 +17,7 @@ public interface ICrawlerService {
      * @param leagues
      * @return
      */
-    public void parseSeasonAndTeam(List<JSONObject> leagues);
+    public void parseSeasonAndTeam(List<Map<String, Object>> leagues);
 
     /**
      * 解析比赛
@@ -27,5 +26,5 @@ public interface ICrawlerService {
      *            赛季
      * @return
      */
-    public void parseGames(List<JSONObject> seasons);
+    public void parseGames(List<Map<String, Object>> seasons);
 }
