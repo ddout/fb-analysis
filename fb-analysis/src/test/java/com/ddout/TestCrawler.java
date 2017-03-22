@@ -1,7 +1,6 @@
 package com.ddout;
 
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -11,11 +10,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.ddout.fb.service.ICust;
-import com.ddout.fb.service.mongodb.IMongoDBService;
+import com.ddout.fb.service.mysql.ISaveDataService;
 import com.ddout.fb.service.parse.ICrawlerService;
-import com.ddout.fb.service.updata.IUpDataService;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -25,64 +23,65 @@ public class TestCrawler {
     @Autowired
     private ICrawlerService service;
     @Autowired
-    private IMongoDBService dbService;
-
-    @Autowired
-    private IUpDataService upDataService;
+    private ISaveDataService dbService;
 
     @Test
     public void testDB() {
-	Object o = dbService.queryTest();
-	System.out.println(o);
+	JSONObject json = new JSONObject();
+	json.put("matchName", "测试国家");// 国家名称
+	json.put("matchInfoURI", "kjl/sdfsdf/sdfsdf");
+	json.put("region", "欧洲");
+	json.put("league", new JSONArray());
+	try {
+	    dbService.saveCountry(json);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw e;
+	}
     }
 
-    /**
-     * 解析国家-联赛
-     */
     @Test
     public void testParseCountry() {
-	service.parseCountry();
+	try {
+	    service.parseCountry();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw e;
+	}
     }
 
-    /**
-     * 解析赛季-球队
-     */
     @Test
-    public void testParseSeason() {
-	List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_COUNTRY);
-	service.parseSeasonAndTeam(countrys);
+    public void testParseSeasonAndTeam() {
+	try {
+	    List<JSONObject> leagues = new ArrayList<JSONObject>();
+	    JSONObject league = new JSONObject();
+	    league.put("region", "欧洲");
+	    league.put("matchName", "英格兰");
+	    league.put("leagueName", "英超");
+	    league.put("leagueURI", "/soccer/league/17/");
+	    leagues.add(league);
+	    service.parseSeasonAndTeam(leagues);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw e;
+	}
     }
 
-    /**
-     * 解析比赛
-     */
     @Test
-    public void testParseGames() {
-	List<JSONObject> countrys = dbService.queryAllObject(ICust.COLNAME_SEASON);
-	List<JSONObject> cc = countrys.subList(0, 1);
-	service.parseGames(cc);
-    }
-
-    /**
-     * 更新比赛
-     */
-    @Test
-    public void testUpDataService() {
-	upDataService.updateOldMatch();
-    }
-
-    /**
-     * 更新比赛单个
-     * 
-     * @throws IOException
-     */
-    @Test
-    public void testParseOldMatch() throws IOException {
-	JSONObject match = dbService.getOneObj(new HashMap<String, Object>() {
-	    {
-		put("match_id", "877172");
-	    }
-	}, ICust.COLNAME_MATCH);
-	upDataService.parseOldMatch(match);
+    public void testParseMatch() {
+	try {
+	    List<JSONObject> seasons = new ArrayList<JSONObject>();
+	    JSONObject season = new JSONObject();
+	    season.put("region", "欧洲");
+	    season.put("matchName", "英格兰");
+	    season.put("leagueName", "英超");
+	    season.put("seasonName", "英超 16/17 赛季");
+	    season.put("seasonURI", "/soccer/league/17/schedule/12651/");
+	    seasons.add(season);
+	    service.parseGames(seasons);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw e;
+	}
     }
 }

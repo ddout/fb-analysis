@@ -5,8 +5,8 @@ var app = new Vue({
 				view: ''
 			},
 			userInfo : {
-				user : '',
-				pwd : '',
+				user : 'ddout',
+				pwd : 'qq123456',
 				auth : false,
 				authMsg : ''
 			},
@@ -99,7 +99,6 @@ var app = new Vue({
 				});
 			},
 			showSeasonModel:function(country, league){
-				console.log(country , league);
 				var viewModel = this.viewModel;
 				var seasonInfo = this.seasonInfo;
 				var sysInfoObj = this.sysInfo;

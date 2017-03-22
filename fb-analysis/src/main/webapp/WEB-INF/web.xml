@@ -6,7 +6,6 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:conf/spring.xml;
-		classpath:conf/spring-job.xml;
 		</param-value>
 	</context-param>
 	<display-name>fb-analysis</display-name>

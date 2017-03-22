@@ -25,7 +25,7 @@
 				<span v-if="userInfo.auth==true">user:{{userInfo.user}}</span>
 			</div>
 			<div class="col-md-12 text-right">
-				<button type="button" class="btn btn-default" v-on:click="loadInfo" v-if="userInfo.auth==true">refush data</button>
+				<button type="button" class="btn btn-default" v-on:click="loadInfo" v-if="userInfo.auth==true">Refresh</button>
 			</div>
 			<div class="col-md-12 text-center" style="color:red;">{{sysInfo.msg}}</div>
 		</div>
@@ -73,7 +73,18 @@
 				</tr>
 			</table>
 		</div>
-		
+		<!--  -->
+		<div class="row" v-if="userInfo.auth==true">
+			<div class="col-md-12 text-left">
+				<div class="input-group">
+			      <input type="text" class="form-control" placeholder="Search for...">
+			      <span class="input-group-btn">
+			        <button class="btn btn-default" type="button">Go!</button>
+			      </span>
+			    </div>
+			</div>
+		</div>
+		<!--  -->
 		<div class="row" v-show="getModelShow=='league'">
 			<h3>Leagues</h3>
 			<table class="table table-bordered">

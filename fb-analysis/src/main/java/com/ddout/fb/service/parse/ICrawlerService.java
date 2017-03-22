@@ -15,10 +15,10 @@ public interface ICrawlerService {
     /**
      * 解析赛季-球队信息
      * 
-     * @param countrys
+     * @param leagues
      * @return
      */
-    public void parseSeasonAndTeam(List<JSONObject> countrys);
+    public void parseSeasonAndTeam(List<JSONObject> leagues);
 
     /**
      * 解析比赛

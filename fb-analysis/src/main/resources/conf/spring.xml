@@ -27,6 +27,6 @@
 
 	<bean id="SpringContextUtil" class="com.cdhy.commons.utils.framework.SpringContextUtil" />
 
-	<import resource="mongo-config.xml" />
-
+	<import resource="classpath:conf/spring-mybatis.xml"/>
+	<import resource="classpath:conf/spring-job.xml"/>
 </beans>

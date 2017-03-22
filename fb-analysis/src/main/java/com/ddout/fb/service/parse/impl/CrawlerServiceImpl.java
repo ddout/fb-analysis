@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ddout.fb.service.ICust;
-import com.ddout.fb.service.mongodb.IMongoDBService;
+import com.ddout.fb.service.mysql.ISaveDataService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
 import net.sf.json.JSONArray;
@@ -26,7 +26,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 
     //
     @Autowired
-    private IMongoDBService mongodbService;
+    private ISaveDataService saveDataService;
 
     private static Connection getConnect(String url) {
 	Connection conn = Jsoup.connect(url);// 获取请求连接
@@ -89,55 +89,52 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    //
 	    json.put("league", leagues);
 	    // 存储-db
-	    mongodbService.saveCountry(json);
+	    saveDataService.saveCountry(json);
 	    //
 	    logger.info("parseLeague end:" + json);
 	}
     }
 
     @Override
-    public void parseSeasonAndTeam(List<JSONObject> countrys) {
+    public void parseSeasonAndTeam(List<JSONObject> leagues) {
 	//
-	for (JSONObject country : countrys) {
-	    String region = country.getString("region");// 区域
-	    String matchName = country.getString("matchName");// 国家名称
-	    JSONArray leagues = country.getJSONArray("league");
-	    for (int i = 0; i < leagues.size(); i++) {
-		JSONObject league = leagues.getJSONObject(i);
-		String leagueName = league.getString("leagueName");// 联赛名称
-		String baseURI = league.getString("leagueURI");// 联赛基准uri
-		//
-		Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
-		con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
-		try {
-		    Document doc = con.get();
-		    // 赛季
-		    Elements seasonHtml = doc.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL");
-		    for (Element ses : seasonHtml) {
-			String href = ses.attr("href");// 赛季uri
-			String seasonName = ses.html().trim();// 赛季名称
-			JSONObject season = new JSONObject();
-			season.put("region", region);
-			season.put("matchName", matchName);
-			season.put("leagueName", leagueName);
-			season.put("uri", href);
-			season.put("seasonName", seasonName);
-			JSONArray teams = parseSeason4Teams(season);// 解析当前赛季的team
-			season.put("teams", teams);
-			// 存储-db
-			mongodbService.saveSeasonAndTeam(season);
-			logger.info("parseSeasonAndTeam end:" + season);
-		    }
-		} catch (IOException e) {
-		    logger.error("parse SeasonAndTeam is errot", e);
+	for (int i = 0; i < leagues.size(); i++) {
+	    JSONObject league = leagues.get(i);
+	    String region = league.getString("region");// 区域
+	    String matchName = league.getString("matchName");// 国家名称
+	    String leagueName = league.getString("leagueName");// 联赛名称
+	    String baseURI = league.getString("leagueURI");// 联赛基准uri
+	    //
+	    Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
+	    con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
+	    try {
+		Document doc = con.get();
+		// 赛季
+		Elements seasonHtml = doc.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL");
+		for (Element ses : seasonHtml) {
+		    String href = ses.attr("href");// 赛季uri
+		    String seasonName = ses.html().trim();// 赛季名称
+		    JSONObject season = new JSONObject();
+		    season.put("region", region);
+		    season.put("matchName", matchName);
+		    season.put("leagueName", leagueName);
+		    season.put("seasonURI", href);
+		    season.put("seasonName", seasonName);
+		    JSONArray teams = parseSeason4Teams(season);// 解析当前赛季的team
+		    season.put("teams", teams);
+		    // 存储-db
+		    saveDataService.saveSeasonAndTeam(season);
+		    logger.info("parseSeasonAndTeam end:" + season);
 		}
+	    } catch (IOException e) {
+		logger.error("parse SeasonAndTeam is errot", e);
 	    }
 	}
     }
 
     private JSONArray parseSeason4Teams(JSONObject season) {
 	JSONArray teams = new JSONArray();
-	String seasonURI = season.getString("uri");
+	String seasonURI = season.getString("seasonURI");
 	String region = season.getString("region");
 	String matchName = season.getString("matchName");
 	Connection con = getConnect(ICust.BASE_PATH + seasonURI);// 获取请求连接
@@ -150,7 +147,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		String href = tm.attr("href");
 		String teamName = tm.html().trim();
 		JSONObject team = new JSONObject();
-		team.put("uri", href);
+		team.put("teamURI", href);
 		team.put("region", region);
 		team.put("matchName", matchName);
 		team.put("teamName", teamName);// team名称
@@ -167,7 +164,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
     public void parseGames(List<JSONObject> seasons) {
 	//
 	for (JSONObject season : seasons) {
-	    String uri = season.getString("uri");/// soccer/league/17/schedule/12651/
+	    String uri = season.getString("seasonURI");/// soccer/league/17/schedule/12651/
 	    String region = season.getString("region");// 欧洲
 	    String matchName = season.getString("matchName");// 英格兰
 	    String leagueName = season.getString("leagueName");// 英超
@@ -323,20 +320,20 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		    String odds_init_3 = tds.get(5).html().trim();
 		    String odds_init_1 = tds.get(6).html().trim();
 		    String odds_init_0 = tds.get(7).html().trim();
-		    matchObj.put("odds_info_uri", "/soccer/match/" + matchid + "/odds/");
+		    matchObj.put("odds_info_URI", "/soccer/match/" + matchid + "/odds/");
 		    if ("-".equals(odds_init_1) || "-".equals(odds_init_0) || "-".equals(odds_init_3)) {
-			matchObj.put("odds_init_3", "-");
-			matchObj.put("odds_init_1", "-");
-			matchObj.put("odds_init_0", "-");
+			matchObj.put("odds_info_3", null);
+			matchObj.put("odds_info_1", null);
+			matchObj.put("odds_info_0", null);
 			matchObj.put("odds_info", null);
 		    } else {
-			matchObj.put("odds_init_3", odds_init_3);
-			matchObj.put("odds_init_1", odds_init_1);
-			matchObj.put("odds_init_0", odds_init_0);
+			matchObj.put("odds_info_3", odds_init_3);
+			matchObj.put("odds_info_1", odds_init_1);
+			matchObj.put("odds_info_0", odds_init_0);
 			matchObj.put("odds_info", parseMatchOddsInfo(matchObj));
 		    }
 		    //
-		    mongodbService.saveMatch(matchObj);
+		    saveDataService.saveMatch(matchObj);
 		    //
 		    logger.info("parseGameInfo end:" + matchObj);
 		} catch (Exception e) {
@@ -350,7 +347,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 
     private JSONArray parseMatchOddsInfo(JSONObject matchObj) {
 	JSONArray arr = new JSONArray();
-	String odds_info_uri = matchObj.getString("odds_info_uri");
+	String odds_info_uri = matchObj.getString("odds_info_URI");
 	//
 	for (int i = 0; i < 6; i++) {
 	    String ajaxUri = java.text.MessageFormat.format(ODDS_AJAX_URI, i);
@@ -371,7 +368,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		    data.put("companyName", jsonObj.getString("CompanyName"));// 公司名称
 		    data.put("providerName", jsonObj.getString("ProviderName"));// 供应商名称
 		    //
-		    data.put("Payoff", jsonObj.getString("Payoff"));// 赔付率
+		    data.put("payoff", jsonObj.getString("Payoff"));// 赔付率
 		    JSONObject start = jsonObj.getJSONObject("Start");// 初始指数
 		    data.put("start_home", start.getString("home"));
 		    data.put("start_draw", start.getString("draw"));
