@@ -1,5 +1,6 @@
 package com.ddout.fb.service.view.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.cdhy.commons.utils.ParamsUtil;
 import com.cdhy.commons.utils.exception.BizException;
+import com.ddout.fb.dao.fb.ISystemInfoMapper;
+import com.ddout.fb.dao.fb.IViewMapper;
+import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.view.IViewService;
 
 import net.sf.json.JSONObject;
@@ -15,21 +19,18 @@ import net.sf.json.JSONObject;
 @Service
 public class IViewServiceImpl implements IViewService {
     @Autowired
-//    private IMongoDBService dbService;
+    private ISystemInfoMapper systemInfoMapper;
+    @Autowired
+    private IViewMapper viewMapper;
 
     @Override
     public JSONObject viewServerInfo() {
 	JSONObject result = new JSONObject();
-//	//
-//	JSONObject sysInfo = dbService.getOneObj(new HashMap<String, Object>() {
-//	    {
-//		put("system_id", "fb-analysis");
-//	    }
-//	}, ICust.SYSTEM_INFO);
+	//
+//	JSONObject sysInfo = JSONObject.fromObject(systemInfoMapper.getSystemInfo());
 //	//
 //	// 4个集合count
 //	List<JSONObject> contrys = dbService.queryAllObject(ICust.COLNAME_COUNTRY);
-//
 //	//
 //	long seasonCount = dbService.getCount(new Criteria(), ICust.COLNAME_SEASON);
 //	long teamCount = dbService.getCount(new Criteria(), ICust.COLNAME_TEAM);
@@ -62,14 +63,15 @@ public class IViewServiceImpl implements IViewService {
 	if ("".equals(region) || "".equals(matchName) || "".equals(leagueName)) {
 	    throw new BizException("params is validata!");
 	}
-	List<JSONObject> seasons = null;//dbService.getObjsForParm(new HashMap<String, Object>() {
+//	List<JSONObject> seasons = dbService.getObjsForParm(new HashMap<String, Object>() {
 //	    {
 //		put("region", region);
 //		put("matchName", matchName);
 //		put("leagueName", leagueName);
 //	    }
 //	}, ICust.COLNAME_SEASON);
-	return seasons;
+//	return seasons;
+	return null;
     }
 
 }

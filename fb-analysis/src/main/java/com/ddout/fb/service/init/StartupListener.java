@@ -29,6 +29,12 @@ public class StartupListener implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	int a = 1, b = 0;
+	try {
+	    int c = a / b;
+	} catch (Exception e) {
+	    return;
+	}
 	Map<String, Object> systemInfoObj = systemInfoMapper.getSystemInfo();
 	if (null == systemInfoObj) {
 	    Map<String, Object> json = new HashMap<String, Object>();
