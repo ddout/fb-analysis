@@ -140,4 +140,27 @@ public class ParseController {
 	}
 	return obj;
     }
+    
+    @RequestMapping("/viewAnalysis")
+    @ResponseBody
+    public Object viewAnalysis(@RequestParam Map<String, Object> parm) {
+	Result obj = new Result();
+	try {
+	    if (true == checkAuthUser()) {
+		Map<String, Object> serverInfo = service.queryViewAnalysis(parm);
+		obj.setRows(serverInfo);
+	    } else {
+		throw new BizException("auth not valid");
+	    }
+	} catch (BizException e) {
+	    log.debug("获取失败", e);
+	    obj.setResult(Result.RESULT_ERROR);
+	    obj.setMsg(e.getMessage());
+	} catch (Exception e) {
+	    log.error("获取异常", e);
+	    obj.setResult(Result.RESULT_ERROR);
+	    obj.setMsg(Result.RESULT_ERROR_MSG);
+	}
+	return obj;
+    }
 }

@@ -29,4 +29,12 @@ public interface IViewService {
      */
     Map<String, Object> queryMatchInfoView(Map<String, Object> parm);
 
+    /**
+     * analysis info
+     * 
+     * @param parm
+     * @return
+     */
+    Map<String, Object> queryViewAnalysis(Map<String, Object> parm);
+
 }

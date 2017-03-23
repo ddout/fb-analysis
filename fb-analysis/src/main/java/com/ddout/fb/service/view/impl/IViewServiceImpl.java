@@ -11,6 +11,7 @@ import com.cdhy.commons.utils.ParamsUtil;
 import com.cdhy.commons.utils.exception.BizException;
 import com.ddout.fb.dao.fb.ISystemInfoMapper;
 import com.ddout.fb.dao.fb.IViewMapper;
+import com.ddout.fb.service.view.IAnalysisService;
 import com.ddout.fb.service.view.IViewService;
 
 import net.sf.json.JSONObject;
@@ -21,6 +22,8 @@ public class IViewServiceImpl implements IViewService {
     private ISystemInfoMapper systemInfoMapper;
     @Autowired
     private IViewMapper viewMapper;
+    @Autowired
+    private IAnalysisService analysisService;
 
     @Override
     public JSONObject viewServerInfo() {
@@ -76,6 +79,15 @@ public class IViewServiceImpl implements IViewService {
 		put("oddsObj", oddsInfo);
 	    }
 	};
+    }
+
+    @Override
+    public Map<String, Object> queryViewAnalysis(Map<String, Object> parm) {
+	String matchId = ParamsUtil.getString4Map(parm, "matchId");
+	if ("".equals(matchId)) {
+	    throw new BizException("matchId is not null");
+	}
+	return analysisService.execAnalysis(matchId);
     }
 
 }

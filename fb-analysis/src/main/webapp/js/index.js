@@ -36,6 +36,7 @@ var app = new Vue({
 			matchInfo: {
 				isActive:false,
 				oddsActive:false,
+				analysisActive:false,
 				id:'',
 				matchObj:{
 				    "id": "",
@@ -160,6 +161,7 @@ var app = new Vue({
 			closeMatchInfo:function(){
 				this.matchInfo.isActive = false;
 				this.matchInfo.oddsActive = false;
+				this.matchInfo.analysisActive = false;
 			},
 			showOddsInfo: function(){
 				if(this.matchInfo.oddsActive == true){
@@ -167,7 +169,21 @@ var app = new Vue({
 				} else {
 					this.matchInfo.oddsActive = true;
 				}
-				
+			},
+			viewAnlysis: function(_id){
+				if(_id == ''){
+					return;
+				}
+				var _this = this;
+				_this.matchInfo.analysisActive = true;
+				$.getJSON('view/viewAnalysis.do', {"matchId":_id}, function(res){
+					console.log(res)
+					if(res['result'] == 'SUCCESS'){
+						
+					} else {
+						_this.errorMsg = res['msg'];
+					}
+				});
 			}
 		}
 	});
