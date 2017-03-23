@@ -1,46 +1,68 @@
 var app = new Vue({
 		el : '#app-main',
 		data : {
-			viewModel : {
-				view: ''
-			},
+			errorMsg:'',
 			userInfo : {
 				user : 'ddout',
 				pwd : 'qq123456',
 				auth : false,
 				authMsg : ''
 			},
-			sysInfo : {
-				msg:'',
-				sysInfo : {
-					"system_id": "-",
-		            "initTime": "-",
-		            "initTimeStr": "-",
-		            "init_country": "-",
-		            "init_SeasonAndTeam": "-",
-		            "init_Games": "-"
+			sysInfo:{
+				initTime:'',
+				init_Games:'',
+				init_SeasonAndTeam:'',
+				init_country:'',
+				system_id:''
+			},
+			sysView:{
+				ThreadGroup4Games:'',
+				ThreadGroup4SeasonAndTeam:'',
+				country:'',
+				league:'',
+				matchCount:'',
+				matchEnd:'',
+				matchUnEnd:'',
+				odds_info:'',
+				season:'',
+				season_team:'',
+				team:''
+			},
+			analysis:{
+				sreachType : 1,
+				sreachKey : '阿森纳',
+				matchs:[]
+			},
+			matchInfo: {
+				isActive:false,
+				oddsActive:false,
+				id:'',
+				matchObj:{
+				    "id": "",
+				    "region": "",
+				    "odds_info_3": "",
+				    "groupName": "",
+				    "leagueName": "",
+				    "home_score": "",
+				    "odds_info_0": "",
+				    "seasonName": "",
+				    "odds_info_1": "",
+				    "roundName": "",
+				    "away_score": "",
+				    "match_result": "",
+				    "boxName": "",
+				    "score_result": "",
+				    "season_id": "",
+				    "gameTime": "",
+				    "refererURI": "",
+				    "match_site": "",
+				    "away_team": "",
+				    "infoURI": "",
+				    "home_team": "",
+				    "matchName": "",
+				    "odds_info_URI": ""
 				},
-				contrys : [],
-				seasonCount : 0,
-				teamCount : 0,
-				matchCount : 0,
-				match_end_Count : 0,
-				match_ne_end_Count : 0
-			},
-			seasonInfo : {
-				region :'',
-				matchName :'',
-				leagueName :'',
-				seasons :[]
-			},
-		},
-		computed : {
-			getModelShow : function(){
-				if(this.userInfo.auth==true){
-					return this.viewModel.view;
-				} else {
-					return false;
-				}
+				odds:[]
 			}
 		},
 		methods : {
@@ -49,85 +71,102 @@ var app = new Vue({
 				this.userInfo.authMsg = '';
 			},
 			authUser:function(event){
-				var userInfoObj = this.userInfo;
+				var _this = this;
 				$(event.target).button('loading');
 				var data = {
-						user:userInfoObj.user,
-						pwd:userInfoObj.pwd
+						user:_this.userInfo.user,
+						pwd:_this.userInfo.pwd
 				};
 				$.getJSON('view/auth.do',data,function(res){
 					$(event.target).button('reset');
 					if(res['result'] == 'SUCCESS'){
-						userInfoObj.auth = true;
-						userInfoObj.pwd = '';
+						_this.userInfo.auth = true;
+						_this.userInfo.pwd = '';
 						$('#auth-Modal').modal('hide');
 						app.loadInfo();
 					} else {
-						userInfoObj.auth = false;
-						userInfoObj.authMsg = res['msg'];
+						_this.userInfo.auth = false;
+						_this.userInfo.authMsg = res['msg'];
 					}
 				})
 			},
 			loadInfo:function(event){
-				var sysInfoObj = this.sysInfo;
-				this.viewModel.view = 'league';
-				sysInfoObj.msg = '';
+				var _this = this;
 				if(event){
 					$(event.target).button('loading');
 				}
 				$.getJSON('view/viewServerInfo.do',function(res){
 					if(res['result'] == 'SUCCESS'){
-						sysInfoObj.sysInfo["system_id"] = res['rows']['sysInfo']['system_id'];
-						sysInfoObj.sysInfo["initTime"] = res['rows']['sysInfo']['initTime'];
-						sysInfoObj.sysInfo["initTimeStr"] = res['rows']['sysInfo']['initTimeStr'];
-						sysInfoObj.sysInfo["init_country"] = res['rows']['sysInfo']['init_country'];
-						sysInfoObj.sysInfo["init_SeasonAndTeam"] = res['rows']['sysInfo']['init_SeasonAndTeam'];
-						sysInfoObj.sysInfo["init_Games"] = res['rows']['sysInfo']['init_Games'];
-						//
-						sysInfoObj.contrys = res['rows']['contrys'];
-						sysInfoObj.seasonCount = res['rows']['seasonCount'];
-						sysInfoObj.teamCount = res['rows']['teamCount'];
-						sysInfoObj.matchCount = res['rows']['matchCount'];
-						sysInfoObj.match_end_Count = res['rows']['match_end_Count'];
-						sysInfoObj.match_ne_end_Count = res['rows']['match_ne_end_Count'];
+						var resData = res['rows']
+						$.extend(_this.sysInfo, resData['sysInfo']);
+						$.extend(_this.sysView, resData['sysView']);
 					} else {
-						sysInfoObj.msg = res['msg'];
+						_this.errorMsg = res['msg'];
 					}
 					if(event){
 						$(event.target).button('reset');
 					}
 				});
 			},
-			showSeasonModel:function(country, league){
-				var viewModel = this.viewModel;
-				var seasonInfo = this.seasonInfo;
-				var sysInfoObj = this.sysInfo;
-				var data = {
-						region:country.region,
-						matchName:country.matchName,
-						leagueName:league.leagueName
-				};
+			analysisSreach:function(v){
+				var _this = this;
+				if(v == 'x'){
+				} else if(v == '2'){
+					_this.analysis.sreachType = 2;
+				} else if(v == '3'){
+					_this.analysis.sreachType = 3;
+				} else{
+					_this.analysis.sreachType = 1;
+				}
+				if(_this.analysis.sreachKey == ''){
+					return;
+				}
 				$.ajax({
-					url : 'view/viewSeasonInfo.do',
-					data : data,
-					type : 'post',
-					dataType :'json',
+					url : 'view/matchSreach.do',
+					data : {"sreachkey" : _this.analysis.sreachKey, "sreachType" : _this.analysis.sreachType},
+					dataType:'json',
+					type:'post',
 					success:function(res){
 						if(res['result'] == 'SUCCESS'){
-							viewModel.view = 'season';
-							seasonInfo.seasons = res['rows'];
-							seasonInfo.region = country.region;
-							seasonInfo.matchName = country.matchName;
-							seasonInfo.leagueName = league.leagueName;
+							var data = res['rows'];
+							_this.analysis.matchs = data;
+							_this.closeMatchInfo();
 						} else {
-							sysInfoObj.msg = res['msg'];
+							_this.errorMsg = res['msg'];
 						}
 					},
 					error:function(res){
-						sysInfoObj.msg = res['msg'];
+						console.log(res);
+						_this.errorMsg = res;
 					}
 				});
-				
+			},
+			showMatchInfo:function(_id){
+				if(_id == ''){
+					return;
+				}
+				var _this = this;
+				_this.matchInfo.id = _id;
+				_this.matchInfo.isActive = true;
+				$.getJSON('view/matchInfoView.do', {"matchId":_this.matchInfo.id}, function(res){
+					if(res['result'] == 'SUCCESS'){
+						$.extend(_this.matchInfo.matchObj, res['rows']['matchObj']);
+						_this.matchInfo.matchObj.odds = res['rows']['oddsObj'];
+					} else {
+						_this.errorMsg = res['msg'];
+					}
+				});
+			},
+			closeMatchInfo:function(){
+				this.matchInfo.isActive = false;
+				this.matchInfo.oddsActive = false;
+			},
+			showOddsInfo: function(){
+				if(this.matchInfo.oddsActive == true){
+					this.matchInfo.oddsActive = false;
+				} else {
+					this.matchInfo.oddsActive = true;
+				}
 				
 			}
 		}

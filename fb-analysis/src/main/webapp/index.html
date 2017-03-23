@@ -9,120 +9,20 @@
 	href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
 	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
 	crossorigin="anonymous">
+<link rel="stylesheet" href="css/index.css"/>
 </head>
-<body style="padding-bottom:80px;">
+<body>
 	<div id="app-main" class="container">
-		<div class="row navbar-fixed-bottom" v-if="userInfo.auth==true" style="padding-bottom:50px;">
-			<div class="col-md-9 text-right"></div>
-			<div class="col-md-1 text-center">
-				<a href="#top">Top</a>
-			</div>
-			<div class="col-md-2 text-right"></div>
-		</div>
 		<div class="row" style="margin:20px 0;">
 			<div class="col-md-12 text-right">
-				<a v-on:click="authUserShow" v-if="userInfo.auth==false" name="top">auth</a> 
+				<a v-on:click="authUserShow" v-if="userInfo.auth==false">auth</a> 
 				<span v-if="userInfo.auth==true">user:{{userInfo.user}}</span>
 			</div>
 			<div class="col-md-12 text-right">
 				<button type="button" class="btn btn-default" v-on:click="loadInfo" v-if="userInfo.auth==true">Refresh</button>
 			</div>
-			<div class="col-md-12 text-center" style="color:red;">{{sysInfo.msg}}</div>
+			<div class="col-md-12 text-center" style="color:red;">{{errorMsg}}</div>
 		</div>
-		<div class="row">
-			<h3>System Info</h3>
-			<table class="table table-bordered">
-				<tr>
-					<td class="text-right">system id</td>
-					<td class="text-left">{{sysInfo.sysInfo.system_id}}</td>
-					<td class="text-right">system init Time</td>
-					<td class="text-left">{{sysInfo.sysInfo.initTimeStr}}</td>
-				</tr>
-				<tr>
-					<td class="text-right">init country</td>
-					<td class="text-left" colspan="3">{{sysInfo.sysInfo.init_country}}</td>
-				</tr>
-				<tr>
-					<td class="text-right">init Season And Team</td>
-					<td class="text-left" colspan="3">{{sysInfo.sysInfo.init_SeasonAndTeam}}</td>
-				</tr>
-				<tr>
-					<td class="text-right">init Games</td>
-					<td class="text-left" colspan="3">{{sysInfo.sysInfo.init_Games}}</td>
-				</tr>
-			</table>
-		</div>
-		<div class="row"  v-if="userInfo.auth==true">
-			<h3>statistical</h3>
-			<table class="table table-bordered">
-				<tr>
-					<td class="text-right">season Count</td>
-					<td class="text-left">{{sysInfo.seasonCount}}</td>
-					<td class="text-right">teamCount</td>
-					<td class="text-left">{{sysInfo.teamCount}}</td>
-				</tr>
-				<tr>
-					<td class="text-right">match Count</td>
-					<td class="text-left">{{sysInfo.matchCount}}</td>
-					<td class="text-right">match end Count</td>
-					<td class="text-left">{{sysInfo.match_end_Count}}</td>
-				</tr>
-				<tr>
-					<td class="text-right">match ne end Count</td>
-					<td class="text-left" colspan="3">{{sysInfo.match_ne_end_Count}}</td>
-				</tr>
-			</table>
-		</div>
-		<!--  -->
-		<div class="row" v-if="userInfo.auth==true">
-			<div class="col-md-12 text-left">
-				<div class="input-group">
-			      <input type="text" class="form-control" placeholder="Search for...">
-			      <span class="input-group-btn">
-			        <button class="btn btn-default" type="button">Go!</button>
-			      </span>
-			    </div>
-			</div>
-		</div>
-		<!--  -->
-		<div class="row" v-show="getModelShow=='league'">
-			<h3>Leagues</h3>
-			<table class="table table-bordered">
-				<tr>
-					<th class="text-right">region</th>
-					<th class="text-left">match</th>
-					<th class="text-left">league</th>
-				</tr>
-				<tr v-for="country in sysInfo.contrys">
-					<td class="text-right">{{country.region}}</td>
-					<td class="text-left">{{country.matchName}}</td>
-					<td class="text-left">
-						<a v-for="le in country.league" v-on:click="showSeasonModel(country,le)">
-							{{le.leagueName}}
-						</a>
-					</td>
-				</tr>
-			</table>
-		</div>
-		
-		<div class="row" v-show="getModelShow=='season'">
-			<h3>Season  --<a v-on:click="loadInfo">back</a> </h3>
-			<table class="table table-bordered">
-				<tr>
-					<th class="text-center">{{seasonInfo.region}}</th>
-					<th class="text-center">{{seasonInfo.matchName}}-{{seasonInfo.leagueName}}</th>
-				</tr>
-				<tr v-for="season in seasonInfo.seasons">
-					<td class="text-center">赛季</td>
-					<td class="text-center">
-						<a>
-							{{season.seasonName}}
-						</a>
-					</td>
-				</tr>
-			</table>
-		</div>
-		
 		
 		<!--  -->
 		<div class="modal fade" tabindex="-1" role="dialog" id="auth-Modal">
@@ -146,6 +46,180 @@
 		</div>
 		<!--  -->
 		
+		
+		
+		
+		<div class="row">
+			<h3>System Info</h3>
+			<table class="table table-bordered">
+				<tr>
+					<td class="text-right">system id</td>
+					<td class="text-left">{{sysInfo.system_id}}</td>
+					<td class="text-right">system init Time</td>
+					<td class="text-left">{{sysInfo.initTime}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">init country</td>
+					<td class="text-left" colspan="3">{{sysInfo.init_country}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">init Season And Team</td>
+					<td class="text-left">{{sysInfo.init_SeasonAndTeam}}</td>
+					<td class="text-right">Thread Group end</td>
+					<td class="text-left">{{sysView.ThreadGroup4SeasonAndTeam}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">init Games</td>
+					<td class="text-left">{{sysInfo.init_Games}}</td>
+					<td class="text-right">Thread Group end</td>
+					<td class="text-left">{{sysView.ThreadGroup4Games}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="row"  v-if="userInfo.auth==true">
+			<h3>Object view</h3>
+			<table class="table table-bordered">
+				<tr>
+					<td class="text-right">country</td>
+					<td class="text-left">{{sysView.country}}</td>
+					<td class="text-right">league</td>
+					<td class="text-left">{{sysView.league}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">season</td>
+					<td class="text-left">{{sysView.season}}</td>
+					<td class="text-right">team</td>
+					<td class="text-left">{{sysView.team}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">match</td>
+					<td class="text-left" colspan="3">{{sysView.matchCount}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">match End</td>
+					<td class="text-left">{{sysView.matchEnd}}</td>
+					<td class="text-right">match odds</td>
+					<td class="text-left">{{sysView.odds_info}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">match Un End</td>
+					<td class="text-left" colspan="3">{{sysView.matchUnEnd}}</td>
+				</tr>
+			</table>
+		</div>
+		<!--  -->
+		<div class="row" v-if="userInfo.auth==true">
+			<h3>Match Analysis</h3>
+			<div class="col-md-12 text-left">
+				<div class="input-group">
+			          <input v-model="analysis.sreachKey" class="form-control" placeholder="Search for...">
+			          <div class="input-group-btn">
+			            <button type="button" class="btn btn-default" v-on:click="analysisSreach('x')">Go!</button>
+			            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			              <span class="caret"></span>
+			              <span class="sr-only">Toggle Dropdown</span>
+			            </button>
+			            <ul class="dropdown-menu dropdown-menu-right">
+			              <li><a v-on:click="analysisSreach(1)">全部<span v-if="analysis.sreachType==1" class="glyphicon glyphicon-ok"></span></a></li>
+			              <li><a v-on:click="analysisSreach(2)">联赛<span v-if="analysis.sreachType==2" class="glyphicon glyphicon-ok"></span></a></li>
+			              <li><a v-on:click="analysisSreach(3)">杯赛<span v-if="analysis.sreachType==3" class="glyphicon glyphicon-ok"></span></a></li>
+			            </ul>
+			          </div>
+		        </div>
+			</div>
+			<!--  -->
+			<div class="col-md-12" v-if="matchInfo.isActive==false">
+				<div class="list-group">
+				  <div class="list-group-item" v-for="match in analysis.matchs" v-on:click="showMatchInfo(match.id)">
+				    <h5 class="list-group-item-heading">
+					    <span v-bind:class="{heightText:match.match_result==3}">
+							 {{match.home_team}}({{match.home_score}})
+						</span>
+						VS 
+						<span v-bind:class="{heightText:match.match_result==0}">
+							({{match.away_score}}){{match.away_team}}
+						</span>
+				    </h5>
+					<table class="list-group-item-text table table-bordered">
+						<tr>
+							<td class="text-left">{{match.leagueName}}</td>
+							<td class="text-left">{{match.seasonName}}</td>
+							<td class="text-left">{{match.roundName}}</td>
+						</tr>
+						<tr>
+							<td class="text-left" v-bind:class="{heightText:match.match_result==3}">{{match.odds_info_3}}</td>
+							<td class="text-left" v-bind:class="{heightText:match.match_result==1}">{{match.odds_info_1}}</td>
+							<td class="text-left" v-bind:class="{heightText:match.match_result==0}">{{match.odds_info_0}}</td>
+						</tr>
+					</table>
+				  </div>
+				</div>
+			</div>
+			<!--  -->
+			<div class="col-md-12 mgtop_20" v-if="matchInfo.isActive==true">
+				<a v-on:click="closeMatchInfo">Close</a>
+				<h4 class="list-group-item-heading mgtop_20">
+					<span v-bind:class="{heightText:matchInfo.matchObj.match_result=='3'}">
+						{{matchInfo.matchObj.home_team}} ({{matchInfo.matchObj.home_score}}) 
+					</span>
+					VS 
+					<span v-bind:class="{heightText:matchInfo.matchObj.match_result=='0'}">
+						({{matchInfo.matchObj.away_score}}) {{matchInfo.matchObj.away_team}}
+					</span>
+				</h4>
+				<table class="list-group-item-text table table-bordered">
+					<tr>
+						<td class="text-left" colspan="3">时间:{{matchInfo.matchObj.gameTime}}</td>
+					</tr>
+					<tr>
+						<td class="text-left">{{matchInfo.matchObj.matchName}}</td>
+						<td class="text-left">{{matchInfo.matchObj.leagueName}}</td>
+						<td class="text-left">{{matchInfo.matchObj.seasonName}}</td>
+					</tr>
+					<tr>
+						<td class="text-left">类别:{{matchInfo.matchObj.boxName}}</td>
+						<td class="text-left">分组:{{matchInfo.matchObj.groupName}}</td>
+						<td class="text-left">轮次:{{matchInfo.matchObj.roundName}}</td>
+					</tr>
+					<tr>
+						<td class="text-left">{{matchInfo.matchObj.odds_info_3}}</td>
+						<td class="text-left">{{matchInfo.matchObj.odds_info_1}}</td>
+						<td class="text-left">{{matchInfo.matchObj.odds_info_0}}</td>
+					</tr>
+				</table>
+				<h4 v-on:click="showOddsInfo">指数详情</h4>
+				<table class="list-group-item-text table table-bordered mgtop_20" v-for="odds in matchInfo.matchObj.odds" v-if="matchInfo.oddsActive">
+					<tr>
+						<th colspan="2">{{odds.companyName}}</th>
+						<th colspan="2">赔付率:{{odds.payoff}}</th>
+					</tr>
+					<tr>
+						<td class="text-left"><b>初指:</b></td>
+						<td class="text-left">{{odds.start_home}}</td>
+						<td class="text-left">{{odds.start_draw}}</td>
+						<td class="text-left">{{odds.start_away}}</td>
+					</tr>
+					<tr>
+						<td class="text-left"><b>新指:</b></td>
+						<td class="text-left">{{odds.end_home}}</td>
+						<td class="text-left">{{odds.end_draw}}</td>
+						<td class="text-left">{{odds.end_away}}</td>
+					</tr>
+					<tr>
+						<td class="text-left"><b>概率:</b></td>
+						<td class="text-left">{{odds.radio_home}}</td>
+						<td class="text-left">{{odds.radio_draw}}</td>
+						<td class="text-left">{{odds.radio_away}}</td>
+					</tr>
+					<tr>
+						<td class="text-left"><b>凯利:</b></td>
+						<td class="text-left">{{odds.kelly_home}}</td>
+						<td class="text-left">{{odds.kelly_draw}}</td>
+						<td class="text-left">{{odds.kelly_away}}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
 		
 	</div>
 

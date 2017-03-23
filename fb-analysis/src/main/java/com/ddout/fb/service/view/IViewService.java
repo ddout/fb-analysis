@@ -14,10 +14,19 @@ public interface IViewService {
     JSONObject viewServerInfo();
 
     /**
-     * 获取联赛信息--赛季
+     * 查询match列表
      * 
+     * @param parm
      * @return
      */
-    List<JSONObject> viewSeasonInfo(Map<String, Object> parm);
+    List<Map<String, Object>> queryMatchSreach(Map<String, Object> parm);
+
+    /**
+     * 获取单个match详情
+     * 
+     * @param parm
+     * @return
+     */
+    Map<String, Object> queryMatchInfoView(Map<String, Object> parm);
 
 }

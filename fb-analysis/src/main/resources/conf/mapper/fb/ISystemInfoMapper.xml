@@ -4,7 +4,10 @@
 
 	<select id="getSystemInfo" parameterType="map" resultType="map">
 		select 
-			system_id,date_format(initTime,'%Y-%m-%d %T') initTime,init_country,init_SeasonAndTeam,init_Games 
+			system_id, date_format(initTime,'%Y-%m-%d %T') initTime,
+			ifnull(init_country,'-') init_country,
+			ifnull(init_SeasonAndTeam,'-') init_SeasonAndTeam,
+			ifnull(init_Games ,'-') init_Games
 		From t_system_info
 	</select>
 	

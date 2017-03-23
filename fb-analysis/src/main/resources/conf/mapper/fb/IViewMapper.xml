@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ddout.fb.dao.fb.IViewMapper">
+
+	<select id="getSystemView" parameterType="map" resultType="map">
+		SELECT
+			(select count(1) from t_country) country,
+			(select count(1) from t_league) league,
+			(select count(1) from t_season) season,
+			(select count(1) from t_team) team,
+			(select count(1) from t_season_team) season_team,
+			(select count(1) from t_match) matchCount,
+			(select count(1) from t_odds_info) odds_info,
+			(select count(1) from t_ThreadGroup4Games) ThreadGroup4Games,
+			(select count(1) from t_ThreadGroup4SeasonAndTeam) ThreadGroup4SeasonAndTeam,
+			(
+			  select count(1) from t_match where score_result='end'
+			) matchEnd,
+			(
+			  select count(1) from t_match where score_result!='end'
+			) matchUnEnd
+	</select>
+	
+	<select id="queryMatchSreach" parameterType="map" resultType="map">
+		select t1.* from t_match t1
+		left JOIN 
+		(
+			select max(id) id,t1.league_id,t1.leagueName, max(t1.seasonName) seasonName from t_season t1
+			group by t1.leagueName
+		) t2 on t1.season_id=t2.id
+		where 1=1
+	   		and 
+	   		(
+	   			(t1.home_team=#{key1} or t1.away_team=#{key1})
+	   			<if test="key2 != null and key2 != ''">
+	   			  and (t1.home_team=#{key2} or t1.away_team=#{key2})
+	   			</if>
+	   		)
+		   <if test="sreachType==2">
+		   		and t1.seasonName not like '%杯%'
+		   </if>
+		   <if test="sreachType==3">
+		   		and t1.seasonName like '%杯%'
+		   </if>
+		order by  t1.seasonName desc,boxName asc, groupName asc,(t1.roundName+0) desc
+		limit 0,15
+	</select>
+	
+	
+	<select id="getMatchInfo" parameterType="string" resultType="map">
+		select * from t_match where id=#{matchId}
+	</select>
+	<select id="getOddsInfo" parameterType="string" resultType="map">
+		select * from t_odds_info where match_id=#{matchId}
+		order by id asc
+	</select>
+</mapper>

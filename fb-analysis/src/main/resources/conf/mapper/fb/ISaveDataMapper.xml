@@ -167,11 +167,11 @@
 		#{gameTime,jdbcType=VARCHAR},#{boxName,jdbcType=VARCHAR},
 		#{groupName,jdbcType=VARCHAR},#{roundName,jdbcType=VARCHAR},
 		#{home_team,jdbcType=VARCHAR},#{away_team,jdbcType=VARCHAR},
-		#{home_score,jdbcType=NUMERIC},#{away_score,jdbcType=NUMERIC},
+		#{home_score,jdbcType=VARCHAR},#{away_score,jdbcType=VARCHAR},
 		#{score_result,jdbcType=VARCHAR},#{match_site,jdbcType=VARCHAR},
-		#{match_result,jdbcType=NUMERIC},#{odds_info_URI,jdbcType=VARCHAR},
-		#{odds_info_3,jdbcType=NUMERIC},#{odds_info_1,jdbcType=NUMERIC},
-		#{odds_info_0,jdbcType=NUMERIC},
+		#{match_result,jdbcType=VARCHAR},#{odds_info_URI,jdbcType=VARCHAR},
+		#{odds_info_3,jdbcType=VARCHAR},#{odds_info_1,jdbcType=VARCHAR},
+		#{odds_info_0,jdbcType=VARCHAR},
 		#{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR},
 		#{leagueName,jdbcType=VARCHAR},#{seasonName,jdbcType=VARCHAR}
 		)
