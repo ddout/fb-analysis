@@ -42,5 +42,13 @@ public class TestAnalysis {
     public void testIdxAnalysis() {
 	service.execIdxAnalysis(matchId);
     }
+    @Test
+    public void testSameLeagueHome() {
+	service.execSameLeagueHome(matchId);
+    }
+    @Test
+    public void testSameLeagueAway() {
+	service.execSameLeagueAway(matchId);
+    }
 
 }

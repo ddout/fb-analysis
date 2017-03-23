@@ -42,5 +42,18 @@ public interface IAnalysisService {
      * @return
      */
     Object execIdxAnalysis(String matchId);
-
+    /**
+     * 同类型赛事情况(主队)
+     * 
+     * @param matchId
+     * @return
+     */
+    Object execSameLeagueHome(String matchId);
+    /**
+     * 同类型赛事情况(客队)
+     * 
+     * @param matchId
+     * @return
+     */
+    Object execSameLeagueAway(String matchId);
 }

@@ -16,7 +16,8 @@ public class AnalysisServiceImpl implements IAnalysisService {
 
     @Override
     public Map<String, Object> execAnalysis(String matchId) {
-	// TODO 这里应该是把其他的分析结果综合起来，按照一定的权重，综合得出分析结果
+	// TODO 这里应该是把其他的分析结果综合起来，按照一定的权重，综合得出分析结果(可以按照百分比呈现)
+	// 目前想到6种
 	Map<String, Object> result = new HashMap<String, Object>();
 	// result.put("analysis", execAnalysis(matchId));// 最终分析结果--包含实际结果的对比
 	// result.put("his_battle", execHisBattle(matchId));// 历史交锋分析结果
@@ -47,6 +48,18 @@ public class AnalysisServiceImpl implements IAnalysisService {
     @Override
     public Object execIdxAnalysis(String matchId) {
 	// TODO 指数分析结果
+	return null;
+    }
+
+    @Override
+    public Object execSameLeagueHome(String matchId) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public Object execSameLeagueAway(String matchId) {
+	// TODO Auto-generated method stub
 	return null;
     }
 
