@@ -97,8 +97,9 @@ public class StartupListener implements ApplicationContextAware {
 			}).start();
 		    }
 		    //
-		    long groupCount = 0;
+		    int groupCount = 0;
 		    do {
+			log.info("tttt=[" + (groupCount < threadMax) + "]=[" + groupCount + "][" + threadMax + "]");
 			groupCount = systemInfoMapper.queryThreadGroup4SeasonAndTeamCount();
 			try {
 			    Thread.sleep(1000 * 20);
@@ -155,8 +156,9 @@ public class StartupListener implements ApplicationContextAware {
 			}).start();
 		    }
 		    //
-		    long groupCount = 0;
+		    int groupCount = 0;
 		    do {
+			log.info("tttt=[" + (groupCount < threadMax) + "]=[" + groupCount + "][" + threadMax + "]");
 			groupCount = systemInfoMapper.queryThreadGroup4GamesCount();
 			try {
 			    Thread.sleep(1000 * 20);

@@ -35,7 +35,9 @@
 	<!--  -->
 	<!--  -->
 	<select id="queryAllCountry" parameterType="map" resultType="map">
-		select * From t_country
+		select le.*,c.matchInfoURI,c.matchName from 
+		t_league le
+		left join t_country c on c.id=le.country_id
 	</select>
 	<select id="queryAllSeason" parameterType="map" resultType="map">
 		select * From t_season

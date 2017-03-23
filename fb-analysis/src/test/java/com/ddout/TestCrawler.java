@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.ddout.fb.dao.fb.ISystemInfoMapper;
 import com.ddout.fb.service.mysql.ISaveDataService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
@@ -26,6 +27,8 @@ public class TestCrawler {
     private ICrawlerService service;
     @Autowired
     private ISaveDataService dbService;
+    @Autowired
+    private ISystemInfoMapper systemInfoMapper;
 
     @Test
     public void testDB() {
@@ -55,14 +58,16 @@ public class TestCrawler {
     @Test
     public void testParseSeasonAndTeam() {
 	try {
-	    List<Map<String, Object>> leagues = new ArrayList<Map<String, Object>>();
-	    Map<String, Object> league = new HashMap<String, Object>();
-	    league.put("region", "欧洲");
-	    league.put("matchName", "英格兰");
-	    league.put("leagueName", "英超");
-	    league.put("leagueURI", "/soccer/league/17/");
-	    leagues.add(league);
-	    service.parseSeasonAndTeam(leagues);
+//	    List<Map<String, Object>> leagues = new ArrayList<Map<String, Object>>();
+//	    Map<String, Object> league = new HashMap<String, Object>();
+//	    league.put("region", "欧洲");
+//	    league.put("matchName", "英格兰");
+//	    league.put("leagueName", "英超");
+//	    league.put("leagueURI", "/soccer/league/17/");
+//	    leagues.add(league);
+	    List<Map<String, Object>> countrys = systemInfoMapper.queryAllCountry();
+	    List<Map<String, Object>> subList = countrys.subList(0, 2);
+	    service.parseSeasonAndTeam(subList);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw e;

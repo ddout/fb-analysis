@@ -22,8 +22,8 @@ public interface ISystemInfoMapper {
     void saveThreadGroup4SeasonAndTeam(HashMap<String, Object> hashMap);
     void saveThreadGroup4Games(HashMap<String, Object> hashMap);
 
-    long queryThreadGroup4SeasonAndTeamCount();
-    long queryThreadGroup4GamesCount();
+    int queryThreadGroup4SeasonAndTeamCount();
+    int queryThreadGroup4GamesCount();
 
     List<Map<String, Object>> queryAllLeague();
 

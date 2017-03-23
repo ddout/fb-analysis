@@ -101,15 +101,16 @@ public class CrawlerServiceImpl implements ICrawlerService {
     public void parseSeasonAndTeam(List<Map<String, Object>> leagues) {
 	//
 	for (int i = 0; i < leagues.size(); i++) {
-	    Map<String, Object> league = leagues.get(i);
-	    String region = ParamsUtil.getString4Map(league, "region");// 区域
-	    String matchName = ParamsUtil.getString4Map(league, "matchName");// 国家名称
-	    String leagueName = ParamsUtil.getString4Map(league, "leagueName");// 联赛名称
-	    String baseURI = ParamsUtil.getString4Map(league, "leagueURI");// 联赛基准uri
-	    //
-	    Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
-	    con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
 	    try {
+		Map<String, Object> league = leagues.get(i);
+		String region = ParamsUtil.getString4Map(league, "region");// 区域
+		String matchName = ParamsUtil.getString4Map(league, "matchName");// 国家名称
+		String leagueName = ParamsUtil.getString4Map(league, "leagueName");// 联赛名称
+		String baseURI = ParamsUtil.getString4Map(league, "leagueURI");// 联赛基准uri
+		//
+		Connection con = getConnect(ICust.BASE_PATH + baseURI);// 获取请求连接
+		con.header("Referer", ICust.BASE_PATH + ICust.BASE_PATH_COUNTRY);
+
 		Document doc = con.get();
 		// 赛季
 		Elements seasonHtml = doc.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL");
@@ -166,17 +167,18 @@ public class CrawlerServiceImpl implements ICrawlerService {
     public void parseGames(List<Map<String, Object>> seasons) {
 	//
 	for (Map<String, Object> season : seasons) {
-	    String uri = ParamsUtil.getString4Map(season, "seasonURI");/// soccer/league/17/schedule/12651/
-	    String region = ParamsUtil.getString4Map(season, "region");// 欧洲
-	    String matchName = ParamsUtil.getString4Map(season, "matchName");// 英格兰
-	    String leagueName = ParamsUtil.getString4Map(season, "leagueName");// 英超
-	    String seasonName = ParamsUtil.getString4Map(season, "seasonName");// 英超
-									       // 16/17
-									       // 赛季
-	    //
-	    Connection con = getConnect(ICust.BASE_PATH + uri);// 获取请求连接
-	    con.header("Referer", ICust.BASE_PATH + uri);
 	    try {
+		String uri = ParamsUtil.getString4Map(season, "seasonURI");/// soccer/league/17/schedule/12651/
+		String region = ParamsUtil.getString4Map(season, "region");// 欧洲
+		String matchName = ParamsUtil.getString4Map(season, "matchName");// 英格兰
+		String leagueName = ParamsUtil.getString4Map(season, "leagueName");// 英超
+		String seasonName = ParamsUtil.getString4Map(season, "seasonName");// 英超
+										   // 16/17
+										   // 赛季
+		//
+		Connection con = getConnect(ICust.BASE_PATH + uri);// 获取请求连接
+		con.header("Referer", ICust.BASE_PATH + uri);
+
 		Document doc = con.get();
 		// 资格赛-小组赛-淘汰赛
 		Elements jsqtitlebox = doc.select("div.jsqtitlebox");
