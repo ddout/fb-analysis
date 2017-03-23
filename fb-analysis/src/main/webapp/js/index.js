@@ -3,8 +3,8 @@ var app = new Vue({
 		data : {
 			errorMsg:'',
 			userInfo : {
-				user : 'ddout',
-				pwd : 'qq123456',
+				user : '',
+				pwd : '',
 				auth : false,
 				authMsg : ''
 			},
@@ -30,7 +30,7 @@ var app = new Vue({
 			},
 			analysis:{
 				sreachType : 1,
-				sreachKey : '阿森纳',
+				sreachKey : '',
 				matchs:[]
 			},
 			matchInfo: {

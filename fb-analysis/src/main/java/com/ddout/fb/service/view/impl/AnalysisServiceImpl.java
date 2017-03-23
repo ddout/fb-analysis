@@ -30,6 +30,7 @@ public class AnalysisServiceImpl implements IAnalysisService {
     @Override
     public Object execHisBattle(String matchId) {
 	// TODO 历史交锋分析结果
+	//1.分主客场???
 	return null;
     }
 
