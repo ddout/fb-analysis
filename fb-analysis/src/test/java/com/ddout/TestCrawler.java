@@ -1,10 +1,16 @@
 package com.ddout;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +18,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.cdhy.commons.utils.ParamsUtil;
 import com.ddout.fb.dao.fb.ISystemInfoMapper;
+import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mysql.ISaveDataService;
 import com.ddout.fb.service.parse.ICrawlerService;
 
@@ -58,13 +66,14 @@ public class TestCrawler {
     @Test
     public void testParseSeasonAndTeam() {
 	try {
-//	    List<Map<String, Object>> leagues = new ArrayList<Map<String, Object>>();
-//	    Map<String, Object> league = new HashMap<String, Object>();
-//	    league.put("region", "欧洲");
-//	    league.put("matchName", "英格兰");
-//	    league.put("leagueName", "英超");
-//	    league.put("leagueURI", "/soccer/league/17/");
-//	    leagues.add(league);
+	    // List<Map<String, Object>> leagues = new ArrayList<Map<String,
+	    // Object>>();
+	    // Map<String, Object> league = new HashMap<String, Object>();
+	    // league.put("region", "欧洲");
+	    // league.put("matchName", "英格兰");
+	    // league.put("leagueName", "英超");
+	    // league.put("leagueURI", "/soccer/league/17/");
+	    // leagues.add(league);
 	    List<Map<String, Object>> countrys = systemInfoMapper.queryAllCountry();
 	    List<Map<String, Object>> subList = countrys.subList(0, 2);
 	    service.parseSeasonAndTeam(subList);

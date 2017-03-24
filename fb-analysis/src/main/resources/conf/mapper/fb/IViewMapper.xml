@@ -23,11 +23,7 @@
 	
 	<select id="queryMatchSreach" parameterType="map" resultType="map">
 		select t1.* from t_match t1
-		left JOIN 
-		(
-			select max(id) id,t1.league_id,t1.leagueName, max(t1.seasonName) seasonName from t_season t1
-			group by t1.leagueName
-		) t2 on t1.season_id=t2.id
+		inner JOIN v_season t2 on t1.season_id=t2.id
 		where 1=1
 	   		and 
 	   		(

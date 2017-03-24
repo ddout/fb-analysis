@@ -132,11 +132,11 @@
 				<div class="list-group">
 				  <div class="list-group-item" v-for="match in analysis.matchs" v-on:click="showMatchInfo(match.id)">
 				    <h5 class="list-group-item-heading">
-					    <span v-bind:class="{heightText:match.match_result==3}">
+					    <span v-bind:class="{heightText:match.score_result=='end' && match.match_result==3}">
 							 {{match.home_team}}({{match.home_score}})
 						</span>
-						VS 
-						<span v-bind:class="{heightText:match.match_result==0}">
+						&nbsp;{{match.score_result}}&nbsp;
+						<span v-bind:class="{heightText:match.score_result=='end' && match.match_result==0}">
 							({{match.away_score}}){{match.away_team}}
 						</span>
 				    </h5>
@@ -147,9 +147,9 @@
 							<td class="text-left">{{match.roundName}}</td>
 						</tr>
 						<tr>
-							<td class="text-left" v-bind:class="{heightText:match.match_result==3}">{{match.odds_info_3}}</td>
-							<td class="text-left" v-bind:class="{heightText:match.match_result==1}">{{match.odds_info_1}}</td>
-							<td class="text-left" v-bind:class="{heightText:match.match_result==0}">{{match.odds_info_0}}</td>
+							<td class="text-left" v-bind:class="{heightText:match.score_result=='end' && match.match_result==3}">{{match.odds_info_3}}</td>
+							<td class="text-left" v-bind:class="{heightText:match.score_result=='end' && match.match_result==1}">{{match.odds_info_1}}</td>
+							<td class="text-left" v-bind:class="{heightText:match.score_result=='end' && match.match_result==0}">{{match.odds_info_0}}</td>
 						</tr>
 					</table>
 				  </div>
@@ -159,11 +159,11 @@
 			<div class="col-md-12 mgtop_20" v-if="matchInfo.isActive==true">
 				<a v-on:click="closeMatchInfo">Close</a>
 				<h4 class="list-group-item-heading mgtop_20">
-					<span v-bind:class="{heightText:matchInfo.matchObj.match_result=='3'}">
+					<span v-bind:class="{heightText:matchInfo.matchObj.score_result=='end' && matchInfo.matchObj.match_result=='3'}">
 						{{matchInfo.matchObj.home_team}} ({{matchInfo.matchObj.home_score}}) 
 					</span>
-					VS 
-					<span v-bind:class="{heightText:matchInfo.matchObj.match_result=='0'}">
+					&nbsp;{{matchInfo.matchObj.score_result}}&nbsp;
+					<span v-bind:class="{heightText:matchInfo.matchObj.score_result=='end' && matchInfo.matchObj.match_result=='0'}">
 						({{matchInfo.matchObj.away_score}}) {{matchInfo.matchObj.away_team}}
 					</span>
 				</h4>

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 public interface ISystemInfoMapper {
 
     Map<String, Object> getSystemInfo();
