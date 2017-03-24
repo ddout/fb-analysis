@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import com.cdhy.commons.utils.ParamsUtil;
+import com.cdhy.commons.utils.SysConfigUtil;
 import com.ddout.fb.dao.fb.ISystemInfoMapper;
 import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.parse.ICrawlerService;
@@ -22,6 +23,7 @@ import com.ddout.fb.service.parse.ICrawlerService;
 @Component
 public class StartupListener implements ApplicationContextAware {
     private static final Logger log = Logger.getLogger(StartupListener.class);
+    private static final String IS_LOAD_INIT = SysConfigUtil.getInstance().getProperites("is_load_init");
     @Autowired
     private ICrawlerService service;
     @Autowired
@@ -29,7 +31,9 @@ public class StartupListener implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-	
+	if ("false".equals(IS_LOAD_INIT)) {
+	    return;
+	}
 	Map<String, Object> systemInfoObj = systemInfoMapper.getSystemInfo();
 	if (null == systemInfoObj) {
 	    Map<String, Object> json = new HashMap<String, Object>();

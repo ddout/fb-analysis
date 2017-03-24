@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cdhy.commons.utils.ParamsUtil;
+import com.cdhy.commons.utils.SysConfigUtil;
 import com.cdhy.commons.utils.exception.BizException;
 import com.cdhy.commons.utils.framework.MD5;
 import com.cdhy.commons.utils.model.Result;
@@ -25,8 +26,8 @@ public class ParseController {
 
     private static final Logger log = Logger.getLogger(ParseController.class);
 
-    private static final String USER = "ddout";
-    private static final String PWD = "64535f299360084520d11ea537437539";
+    private static final String USER = SysConfigUtil.getInstance().getProperites("user");
+    private static final String PWD = SysConfigUtil.getInstance().getProperites("pwd");
     public static final String SESSION_USER = "session_user";
 
     @Autowired
