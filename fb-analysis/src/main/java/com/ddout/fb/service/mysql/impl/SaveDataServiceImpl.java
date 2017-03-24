@@ -330,4 +330,22 @@ public class SaveDataServiceImpl implements ISaveDataService {
 
     }
 
+    @Override
+    public int queryZucaiNoCount(String no) {
+	return mapper.queryZucaiNoCount(no);
+    }
+
+    @Override
+    public Map<String, Object> queryZucaiMatchForOddsURI(String odds_info_uri) {
+	return mapper.queryZucaiMatchForOddsURI(odds_info_uri);
+    }
+
+    @Override
+    public void saveZucai14Match(HashMap<String, Object> hashMap) {
+	Map<String, Object> matchInfo = mapper.queryZucai14Match(hashMap);
+	if (null == matchInfo || matchInfo.size() == 0) {
+	    mapper.saveZucai14Match(hashMap);
+	}
+    }
+
 }

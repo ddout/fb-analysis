@@ -27,4 +27,13 @@ public interface ICrawlerService {
      * @return
      */
     public void parseGames(List<Map<String, Object>> seasons);
+    
+    
+    /**
+     * 解析最新的一个zucai14
+     * 
+     
+     * @return
+     */
+    public void parseZucai14();
 }

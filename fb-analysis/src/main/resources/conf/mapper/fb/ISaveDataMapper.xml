@@ -221,4 +221,37 @@
 		delete t_odds_info
 		where match_id=#{match_id}
 	</delete>
+
+	<!-- -->
+	<select id="queryZucaiNoCount" parameterType="string"
+		resultType="int">
+		select count(1) from t_zucai_14
+		where zucai_no=#{no}
+	</select>
+	<select id="queryZucaiMatchForOddsURI" parameterType="string"
+		resultType="map">
+		select * from t_match
+		where odds_info_uri = #{odds_info_uri}
+		limit 0,1
+	</select>
+
+	<select id="queryZucai14Match" parameterType="map" resultType="map">
+		select * from t_zucai_14
+		where match_id=#{match_id}
+		and zucai_no=#{zucai_no}
+	</select>
+
+	<insert id="saveZucai14Match" parameterType="map"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_zucai_14
+		(zucai_no,idx,end_time,leagueName,home_team,away_team,match_id,odds_info_uri,gameTime)
+		values
+		(
+		#{zucai_no,jdbcType=VARCHAR},#{idx,jdbcType=NUMERIC},
+		#{end_time,jdbcType=VARCHAR},#{leagueName,jdbcType=VARCHAR},
+		#{home_team,jdbcType=VARCHAR},#{away_team,jdbcType=VARCHAR},
+		#{match_id,jdbcType=VARCHAR},#{odds_info_uri,jdbcType=VARCHAR},
+		#{gameTime,jdbcType=VARCHAR}
+		)
+	</insert>
 </mapper>

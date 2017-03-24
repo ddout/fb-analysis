@@ -101,4 +101,13 @@ public class TestCrawler {
 	}
     }
 
+    @Test
+    public void testParseZucai14() {
+	try {
+	    service.parseZucai14();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw e;
+	}
+    }
 }

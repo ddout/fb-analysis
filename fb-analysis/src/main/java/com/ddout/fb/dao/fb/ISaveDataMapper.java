@@ -38,4 +38,12 @@ public interface ISaveDataMapper {
 
     void deleteAddsInfo(String match_id);
 
+    int queryZucaiNoCount(String no);
+
+    Map<String, Object> queryZucaiMatchForOddsURI(String odds_info_uri);
+
+    void saveZucai14Match(HashMap<String, Object> hashMap);
+
+    Map<String, Object> queryZucai14Match(HashMap<String, Object> hashMap);
+
 }

@@ -137,7 +137,6 @@ var app = new Vue({
 						}
 					},
 					error:function(res){
-						console.log(res);
 						_this.errorMsg = res;
 					}
 				});
@@ -170,9 +169,12 @@ var app = new Vue({
 					this.matchInfo.oddsActive = true;
 				}
 			},
-			viewAnlysis: function(_id){
+			viewAnlysis: function(_id,event){
 				if(_id == ''){
 					return;
+				}
+				if(event){
+					$(event.target).button('loading');
 				}
 				var _this = this;
 				_this.matchInfo.analysisActive = true;
@@ -182,6 +184,9 @@ var app = new Vue({
 						
 					} else {
 						_this.errorMsg = res['msg'];
+					}
+					if(event){
+						$(event.target).button('reset');
 					}
 				});
 			}

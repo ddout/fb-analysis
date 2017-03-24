@@ -13,5 +13,7 @@ public interface ICust {
     public static final String BASE_PATH = "http://www.okooo.com";
     /** 国家uri */
     public static final String BASE_PATH_COUNTRY = "/soccer/";
+    
+    public static final String BASE_ZUCAI_14 = "http://www.okooo.com/zucai/";
 
 }

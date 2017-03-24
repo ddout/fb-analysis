@@ -59,7 +59,7 @@ public class AnalysisServiceImpl implements IAnalysisService {
 	// TODO 指数分析结果
 	// 获取凯利方差离散值
 	BigDecimal[] kiliy = Killy(matchId);
-
+	log.info("凯利方差结果："+killyResult(kiliy));
 	return null;
     }
 
