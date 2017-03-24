@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ddout.fb.dao.fb.IAnalysisMapper">
-
+	
+	<select id="queryOddsList" parameterType="string" resultType="map">
+		select * from t_odds_info
+		where match_id=#{matchId}
+		order by id asc
+	</select>
+	
+	<select id="getEndMatchCount" resultType="int">
+		select count(1) from t_match
+		where score_result = 'end'
+	</select>
+	<select id="queryEndMatch" parameterType="map" resultType="map">
+		select * from t_match
+		where score_result = 'end'
+		limit #{start},#{end}
+	</select>
+	
+	
+	
+	
+	<insert id="saveAnalysisView1" parameterType="map">
+		insert into t_analysis_view1
+		(match_id,killy_result,match_result,killy_home,killy_draw,killy_away)
+		values
+		(#{matchId},#{killyResult},#{matchResult},
+		#{killy_home,jdbcType=NUMERIC},#{killy_draw,jdbcType=NUMERIC},#{killy_away,jdbcType=NUMERIC})
+	</insert>
 </mapper>

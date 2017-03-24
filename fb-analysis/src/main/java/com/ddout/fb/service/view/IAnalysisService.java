@@ -56,4 +56,6 @@ public interface IAnalysisService {
      * @return
      */
     Object execSameLeagueAway(String matchId);
+    
+    void analysisMatch();
 }

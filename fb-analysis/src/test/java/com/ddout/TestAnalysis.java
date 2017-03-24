@@ -16,7 +16,7 @@ public class TestAnalysis {
     @Autowired
     private IAnalysisService service;
 
-    public static String matchId = "123123";
+    public static String matchId = "877160";// "877278";
 
     @Test
     public void testAnalysis() {
@@ -42,13 +42,19 @@ public class TestAnalysis {
     public void testIdxAnalysis() {
 	service.execIdxAnalysis(matchId);
     }
+
     @Test
     public void testSameLeagueHome() {
 	service.execSameLeagueHome(matchId);
     }
+
     @Test
     public void testSameLeagueAway() {
 	service.execSameLeagueAway(matchId);
     }
 
+    @Test
+    public void testAnalysisMatch() {
+	service.analysisMatch();
+    }
 }

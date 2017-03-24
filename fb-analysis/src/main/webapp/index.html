@@ -171,7 +171,7 @@
 					<tr>
 						<td class="text-left" colspan="2">时间:{{matchInfo.matchObj.gameTime}}</td>
 						<td class="text-right">
-							<a v-on:click="viewAnlysis(matchInfo.matchObj.id)">Anlysis</a>
+							<button type="button" class="btn btn-default" v-on:click="viewAnlysis(matchInfo.matchObj.id,$event)">Anlysis</button>
 						</td>
 					</tr>
 					<tr>
