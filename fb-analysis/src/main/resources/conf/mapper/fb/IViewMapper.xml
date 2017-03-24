@@ -21,6 +21,7 @@
 			) matchUnEnd
 	</select>
 	
+
 	<select id="queryMatchSreach" parameterType="map" resultType="map">
 		select t1.* from t_match t1
 		inner JOIN v_season t2 on t1.season_id=t2.id
@@ -49,5 +50,25 @@
 	<select id="getOddsInfo" parameterType="string" resultType="map">
 		select * from t_odds_info where match_id=#{matchId}
 		order by id asc
+	</select>
+	
+	
+	
+	<select id="getZucai14s" parameterType="map" resultType="map">
+		select t.* From 
+		(
+			select zucai_no
+			from t_zucai_14
+			group by zucai_no
+		) t
+		order by t.zucai_no desc
+		limit 0,5
+	</select>
+	
+	<select id="queryZucai14ForNo" parameterType="string" resultType="map">
+		select t1.*,t2.match_result,t2.home_score,t2.away_score 
+		from t_zucai_14 t1
+		left join t_match t2 on t1.match_id=t2.id
+		where zucai_no=#{no}
 	</select>
 </mapper>

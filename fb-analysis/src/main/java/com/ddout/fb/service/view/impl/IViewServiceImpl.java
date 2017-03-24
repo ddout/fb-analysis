@@ -33,8 +33,10 @@ public class IViewServiceImpl implements IViewService {
 	//
 	Map<String, Object> sysView = viewMapper.getSystemView();
 	//
+	List<Map<String, Object>> zucai14s = viewMapper.getZucai14s();
 	result.put("sysInfo", sysInfo);
 	result.put("sysView", sysView);
+	result.put("zucai14s", zucai14s);
 	return result;
     }
 
@@ -88,6 +90,36 @@ public class IViewServiceImpl implements IViewService {
 	    throw new BizException("matchId is not null");
 	}
 	return analysisService.execAnalysis(matchId);
+    }
+
+    @Override
+    public Map<String, Object> queryViewZucai14(Map<String, Object> parm) {
+	// zucai_no:'',
+	// endTime:'',
+	// matchs:[match_analysis_result,match_result]
+	String no = ParamsUtil.getString4Map(parm, "no");
+	if ("".equals(no)) {
+	    throw new BizException("no is not null");
+	}
+
+	List<Map<String, Object>> zucai14List = viewMapper.queryZucai14ForNo(no);
+	String endTime = "";
+	if (zucai14List.size() > 0) {
+	    for (Map<String, Object> map : zucai14List) {
+		endTime = ParamsUtil.getString4Map(map, "end_time");
+		try {
+		    Map<String, Object> analysis = analysisService
+			    .execAnalysis(ParamsUtil.getString4Map(map, "match_id"));
+		    map.put("analysis", analysis);
+		} catch (Exception e) {
+		}
+	    }
+	}
+	Map<String, Object> result = new HashMap<String, Object>();
+	result.put("zucai_no", no);
+	result.put("endTime", endTime);
+	result.put("matchs", zucai14List);
+	return result;
     }
 
 }

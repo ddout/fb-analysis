@@ -36,5 +36,7 @@ public interface IViewService {
      * @return
      */
     Map<String, Object> queryViewAnalysis(Map<String, Object> parm);
+    
+    Map<String, Object> queryViewZucai14(Map<String, Object> parm);
 
 }

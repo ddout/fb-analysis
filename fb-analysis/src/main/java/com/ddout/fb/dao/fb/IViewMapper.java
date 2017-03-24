@@ -14,4 +14,8 @@ public interface IViewMapper {
 
     List<Map<String, Object>> getOddsInfo(String matchId);
 
+    List<Map<String, Object>> getZucai14s();
+
+    List<Map<String, Object>> queryZucai14ForNo(String no);
+
 }

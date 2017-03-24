@@ -26,7 +26,8 @@ var app = new Vue({
 				odds_info:'',
 				season:'',
 				season_team:'',
-				team:''
+				team:'',
+				zucai14s:[]
 			},
 			analysis:{
 				sreachType : 1,
@@ -64,6 +65,12 @@ var app = new Vue({
 				    "odds_info_URI": ""
 				},
 				odds:[]
+			},
+			zucai14Info:{
+				isActive:false,
+				zucai_no:'',
+				endTime:'',
+				matchs:[]
 			}
 		},
 		methods : {
@@ -101,6 +108,7 @@ var app = new Vue({
 						var resData = res['rows']
 						$.extend(_this.sysInfo, resData['sysInfo']);
 						$.extend(_this.sysView, resData['sysView']);
+						_this.sysView.zucai14s = resData['zucai14s'];
 					} else {
 						_this.errorMsg = res['msg'];
 					}
@@ -147,6 +155,7 @@ var app = new Vue({
 				}
 				var _this = this;
 				_this.matchInfo.id = _id;
+				_this.closeMatchInfo();
 				_this.matchInfo.isActive = true;
 				$.getJSON('view/matchInfoView.do', {"matchId":_this.matchInfo.id}, function(res){
 					if(res['result'] == 'SUCCESS'){
@@ -161,6 +170,7 @@ var app = new Vue({
 				this.matchInfo.isActive = false;
 				this.matchInfo.oddsActive = false;
 				this.matchInfo.analysisActive = false;
+				this.zucai14Info.isActive = false;
 			},
 			showOddsInfo: function(){
 				if(this.matchInfo.oddsActive == true){
@@ -177,9 +187,9 @@ var app = new Vue({
 					$(event.target).button('loading');
 				}
 				var _this = this;
+				_this.closeMatchInfo();
 				_this.matchInfo.analysisActive = true;
 				$.getJSON('view/viewAnalysis.do', {"matchId":_id}, function(res){
-					console.log(res)
 					if(res['result'] == 'SUCCESS'){
 						
 					} else {
@@ -189,6 +199,21 @@ var app = new Vue({
 						$(event.target).button('reset');
 					}
 				});
+			},
+			viewZucai14: function(zucai_no){
+				var _this = this;
+				_this.closeMatchInfo();
+				$.getJSON('view/viewZucai14.do', {"no":zucai_no}, function(res){
+					if(res['result'] == 'SUCCESS'){
+						$.extend(_this.zucai14Info, res['rows']);
+						_this.zucai14Info.isActive = true;
+					} else {
+						_this.errorMsg = res['msg'];
+					}
+				});
+			},
+			viewAnalysiSampile : function(){
+				$('#viewAnalysiSampile-Modal').modal('show');
 			}
 		}
 	});

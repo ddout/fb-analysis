@@ -32,6 +32,10 @@ public class AnalysisServiceImpl implements IAnalysisService {
 	// result.put("home_state", execHomeState(matchId));// 最近比赛状态分析(主)
 	// result.put("away_state", execAwayState(matchId));// 最近比赛状态分析(客)
 	// result.put("idx_analysis", execIdxAnalysis(matchId));// 指数分析结果
+	BigDecimal[] kiliy = Killy(matchId);
+	int idx_analysis = killyResult(kiliy);
+	log.info("凯利方差结果："+idx_analysis);
+	result.put("idx_analysis", idx_analysis);// 指数分析结果
 	return result;
     }
 

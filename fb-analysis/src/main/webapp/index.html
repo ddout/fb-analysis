@@ -105,6 +105,12 @@
 					<td class="text-right">match Un End</td>
 					<td class="text-left" colspan="3">{{sysView.matchUnEnd}}</td>
 				</tr>
+				<tr>
+					<td class="text-right">zucai14</td>
+					<td class="text-left" colspan="3">
+						<a v-for="zucai14 in sysView.zucai14s" v-on:click="viewZucai14(zucai14.zucai_no)">{{zucai14.zucai_no}}期&nbsp;</a>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<!--  -->
@@ -229,8 +235,67 @@
 				</table>
 			</div>
 		</div>
+		<!--  -->
+		<!--  -->
+		<!--  -->
+		<div class="col-md-12 mgtop_20" v-if="zucai14Info.isActive==true">
+			<a v-on:click="closeMatchInfo">Close</a>
+			<h5 class="list-group-item-heading mgtop_20">
+				<a v-on:click="viewAnalysiSampile">足彩{{zucai14Info.zucai_no}}期-截止:{{zucai14Info.endTime}}</a>
+			</h5>
+			<table class="list-group-item-text table table-bordered" v-for="match in zucai14Info.matchs"  v-on:click="showMatchInfo(match.match_id)">
+				<tr>
+					<td class="text-right">{{match.idx}}</td>
+					<td class="text-left" colspan="2">{{match.gameTime}}</td>
+				</tr>
+				<tr>
+					<td class="text-right">{{match.leagueName}}</td>
+					<td class="text-left">{{match.home_team}}[{{match.home_score}}]</td>
+					<td class="text-left">[{{match.away_score}}]{{match.away_team}}</td>
+				</tr>
+				<tr v-bind:class="{heightBg:match.analysis.idx_analysis == match.match_result}">
+					<td class="text-right">result:</td>
+					<td class="text-left">{{match.match_result}}</td>
+					<td class="text-left">{{match.analysis.idx_analysis}}</td>
+				</tr>
+			</table>
+		</div>
+		<!--  -->
+		<div class="modal fade" tabindex="-1" role="dialog" id="viewAnalysiSampile-Modal">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h6 class="modal-title">{{zucai14Info.zucai_no}}期-截止:{{zucai14Info.endTime}}</h6>
+		      </div>
+		      <div class="modal-body">
+		       		<table class="table table-bordered">
+		       			<tr>
+		       				<th>序</th>
+		       				<th>果</th>
+		       				<th>主</th>
+		       				<th>客</th>
+		       			</tr>
+		       			<tr v-for="match in zucai14Info.matchs" v-bind:class="{heightBg:match.analysis.idx_analysis == match.match_result}">
+		       				<td>{{match.idx}}</td>
+		       				<td>{{match.analysis.idx_analysis}}[{{match.match_result}}]</td>
+		       				<td>{{match.home_team}}[{{match.home_score}}]</td>
+		       				<td>[{{match.away_score}}]{{match.away_team}}</td>
+		       			</tr>
+		       		</table>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<!--  -->
+		
 		
 	</div>
+		
+</div>
 
 
 
