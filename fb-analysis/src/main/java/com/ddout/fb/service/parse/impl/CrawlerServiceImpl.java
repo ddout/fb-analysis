@@ -114,6 +114,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		Document doc = con.get();
 		// 赛季
 		Elements seasonHtml = doc.select("div.LotteryList_Data").get(3).select("a.BlueWord_TxtL");
+		int seasonSize = seasonHtml.size();
 		for (Element ses : seasonHtml) {
 		    String href = ses.attr("href");// 赛季uri
 		    String seasonName = ses.html().trim();// 赛季名称
@@ -123,6 +124,8 @@ public class CrawlerServiceImpl implements ICrawlerService {
 		    season.put("leagueName", leagueName);
 		    season.put("seasonURI", href);
 		    season.put("seasonName", seasonName);
+		    season.put("seasonOrder", seasonSize + "");
+		    seasonSize = seasonSize - 1;
 		    JSONArray teams = parseSeason4Teams(season);// 解析当前赛季的team
 		    season.put("teams", teams);
 		    // 存储-db

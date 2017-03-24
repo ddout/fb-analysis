@@ -111,12 +111,13 @@
 	<insert id="saveSeason" parameterType="map" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into t_season
-		(region,matchName,leagueName,league_id,seasonURI,seasonName)
+		(region,matchName,leagueName,league_id,seasonURI,seasonName,seasonOrder)
 		values
 		(
 		#{region,jdbcType=VARCHAR},#{matchName,jdbcType=VARCHAR},
 		#{leagueName,jdbcType=VARCHAR},#{leagueId,jdbcType=NUMERIC},
-		#{seasonURI,jdbcType=VARCHAR},#{seasonName,jdbcType=VARCHAR}
+		#{seasonURI,jdbcType=VARCHAR},#{seasonName,jdbcType=VARCHAR},
+		#{seasonOrder,jdbcType=VARCHAR}
 		)
 	</insert>
 
@@ -200,18 +201,21 @@
 		#{matchId,jdbcType=VARCHAR},#{makerID,jdbcType=VARCHAR},
 		#{companyName,jdbcType=VARCHAR},#{providerName,jdbcType=VARCHAR},
 		#{payoff,jdbcType=NUMERIC},
-		#{start_home,jdbcType=NUMERIC}, #{start_draw,jdbcType=NUMERIC}, #{start_away,jdbcType=NUMERIC},
+		#{start_home,jdbcType=NUMERIC},
+		#{start_draw,jdbcType=NUMERIC}, #{start_away,jdbcType=NUMERIC},
 		#{end_home,jdbcType=NUMERIC}, #{end_draw,jdbcType=NUMERIC},
 		#{end_away,jdbcType=NUMERIC},
-		#{radio_home,jdbcType=NUMERIC}, #{radio_draw,jdbcType=NUMERIC}, #{radio_away,jdbcType=NUMERIC},
+		#{radio_home,jdbcType=NUMERIC},
+		#{radio_draw,jdbcType=NUMERIC}, #{radio_away,jdbcType=NUMERIC},
 		#{kelly_home,jdbcType=NUMERIC}, #{kelly_draw,jdbcType=NUMERIC},
 		#{kelly_away,jdbcType=NUMERIC}
 		)
 	</insert>
-	
+
 	<delete id="deleteMath" parameterType="string">
 		delete t_match
-		where id=#{match_id}
+		where
+		id=#{match_id}
 	</delete>
 	<delete id="deleteAddsInfo" parameterType="string">
 		delete t_odds_info

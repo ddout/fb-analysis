@@ -83,6 +83,7 @@ public class SaveDataServiceImpl implements ISaveDataService {
 	    //
 	    final String seasonURI = season.getString("seasonURI");
 	    final String seasonName = season.getString("seasonName");
+	    final String seasonOrder = season.getString("seasonOrder");
 	    //
 	    final Map<String, Object> seasonMap = new HashMap<String, Object>() {
 		private static final long serialVersionUID = 7851079310909583400L;
@@ -93,6 +94,7 @@ public class SaveDataServiceImpl implements ISaveDataService {
 		    put("leagueName", leagueName);
 		    put("seasonURI", seasonURI);
 		    put("seasonName", seasonName);
+		    put("seasonOrder", seasonOrder);
 		}
 	    };
 	    Map<String, Object> seasonInfo = mapper.querySeasonOne(seasonMap);
