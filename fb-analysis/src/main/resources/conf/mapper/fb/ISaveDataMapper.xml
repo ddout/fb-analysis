@@ -213,12 +213,12 @@
 	</insert>
 
 	<delete id="deleteMath" parameterType="string">
-		delete t_match
+		delete from t_match
 		where
 		id=#{match_id}
 	</delete>
 	<delete id="deleteAddsInfo" parameterType="string">
-		delete t_odds_info
+		delete from t_odds_info
 		where match_id=#{match_id}
 	</delete>
 
