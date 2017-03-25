@@ -504,4 +504,10 @@ public class UpDataServiceImpl implements IUpDataService {
 	}
 	return matchResult;
     }
+
+    @Override
+    public void updateLastUpdateTime() {
+	dataService.updateLastUpdateTime();
+	
+    }
 }

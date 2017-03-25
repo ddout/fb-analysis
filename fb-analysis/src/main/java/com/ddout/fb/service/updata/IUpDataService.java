@@ -16,5 +16,7 @@ public interface IUpDataService {
      */
     public void updateOldMatch();
 
+    public void updateLastUpdateTime();
+
 
 }

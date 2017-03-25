@@ -13,6 +13,7 @@ var app = new Vue({
 				init_Games:'',
 				init_SeasonAndTeam:'',
 				init_country:'',
+				last_flush_time:'',
 				system_id:''
 			},
 			sysView:{

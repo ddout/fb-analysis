@@ -25,4 +25,6 @@ public interface ISaveDataService {
 
     void saveZucai14Match(HashMap<String, Object> hashMap);
 
+    void updateLastUpdateTime();
+
 }

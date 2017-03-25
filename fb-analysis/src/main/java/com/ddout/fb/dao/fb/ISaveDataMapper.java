@@ -46,4 +46,6 @@ public interface ISaveDataMapper {
 
     Map<String, Object> queryZucai14Match(HashMap<String, Object> hashMap);
 
+    void updateLastUpdateTime();
+
 }

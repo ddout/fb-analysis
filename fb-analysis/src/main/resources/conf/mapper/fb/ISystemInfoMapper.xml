@@ -7,7 +7,8 @@
 			system_id, date_format(initTime,'%Y-%m-%d %T') initTime,
 			ifnull(init_country,'-') init_country,
 			ifnull(init_SeasonAndTeam,'-') init_SeasonAndTeam,
-			ifnull(init_Games ,'-') init_Games
+			ifnull(init_Games ,'-') init_Games,
+			ifnull(last_flush_time,'-') last_flush_time
 		From t_system_info
 	</select>
 	

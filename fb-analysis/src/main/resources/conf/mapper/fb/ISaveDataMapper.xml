@@ -254,4 +254,9 @@
 		#{gameTime,jdbcType=VARCHAR}
 		)
 	</insert>
+	
+	<update id="updateLastUpdateTime">
+		update t_system_info
+		set last_flush_time=date_format(now(),'%Y-%m-%d %T')
+	</update>
 </mapper>

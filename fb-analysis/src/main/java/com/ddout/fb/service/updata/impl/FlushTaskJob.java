@@ -41,6 +41,7 @@ public class FlushTaskJob {
 	} catch (Exception e) {
 	    log.error(e);
 	}
+	service.updateLastUpdateTime();
 	log.debug("END---------------- FlushTaskJob");
     }
 

@@ -348,4 +348,9 @@ public class SaveDataServiceImpl implements ISaveDataService {
 	}
     }
 
+    @Override
+    public void updateLastUpdateTime() {
+	mapper.updateLastUpdateTime();	
+    }
+
 }

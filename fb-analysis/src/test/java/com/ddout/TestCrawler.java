@@ -23,6 +23,7 @@ import com.ddout.fb.dao.fb.ISystemInfoMapper;
 import com.ddout.fb.service.ICust;
 import com.ddout.fb.service.mysql.ISaveDataService;
 import com.ddout.fb.service.parse.ICrawlerService;
+import com.ddout.fb.service.updata.IUpDataService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -37,6 +38,8 @@ public class TestCrawler {
     private ISaveDataService dbService;
     @Autowired
     private ISystemInfoMapper systemInfoMapper;
+    @Autowired
+    private IUpDataService upservice;
 
     @Test
     public void testDB() {
@@ -110,4 +113,20 @@ public class TestCrawler {
 	    throw e;
 	}
     }
+
+    @Test
+    public void testUpdate() {
+	
+	try {
+	    upservice.updateOldMatch();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	try {
+	    service.parseZucai14();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+
 }
