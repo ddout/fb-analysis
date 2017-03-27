@@ -462,4 +462,59 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	}
     }
 
+    @Override
+    public void parseZucai14Old(String no) {
+	try {
+	    Connection conn = getConnect(ICust.BASE_ZUCAI_14 + "/" + no + "/");// 获取请求连接
+	    conn.header("Referer", ICust.BASE_PATH);
+	    Document doc = conn.get();
+	    //
+	    final String zucai_no = doc.getElementById("topLotteryNo").attr("title").replace("期", "");
+
+	    int noCount = saveDataService.queryZucaiNoCount(zucai_no);
+	    if (noCount >= 14) {
+		return;
+	    }
+	    final String end_time = doc.select("div.overTime em").get(0).html();
+	    Elements tableTr = doc.select("#gametablesend table.jcmaintable tr");
+	    for (Element tr : tableTr) {
+		try {
+		    Elements tds = tr.select("td");
+		    final String odds_info_uri = tds.get(5).select("a.jsOupei").attr("href");
+		    Map<String, Object> matchInfo = saveDataService.queryZucaiMatchForOddsURI(odds_info_uri);
+		    if (null == matchInfo || matchInfo.size() == 0) {
+			continue;
+		    }
+		    //
+		    final String matchId = ParamsUtil.getString4Map(matchInfo, "id");
+		    final int idx = Integer.parseInt(tds.get(0).html());
+		    final String leagueName = ParamsUtil.getString4Map(matchInfo, "leagueName");
+		    final String gameTime = tds.get(2).attr("title").replaceAll("比赛时间:", "");
+		    final String homeTeam = ParamsUtil.getString4Map(matchInfo, "home_team");
+		    final String awayTeam = ParamsUtil.getString4Map(matchInfo, "away_team");
+		    //
+		    saveDataService.saveZucai14Match(new HashMap<String, Object>() {
+			private static final long serialVersionUID = -4558754925326428492L;
+
+			{
+			    put("zucai_no", zucai_no);
+			    put("end_time", end_time);
+			    put("idx", idx);
+			    put("leagueName", leagueName);
+			    put("home_team", homeTeam);
+			    put("away_team", awayTeam);
+			    put("match_id", matchId);
+			    put("odds_info_uri", odds_info_uri);
+			    put("gameTime", gameTime);
+			}
+		    });
+		} catch (Exception e) {
+		    logger.error("parse Zucai14-tr error", e);
+		}
+	    }
+
+	} catch (Exception e) {
+	    logger.error("parse Zucai14 is errot", e);
+	}
+    }
 }
