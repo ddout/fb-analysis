@@ -4,8 +4,12 @@
 
 
 	<select id="getEndMatchList" parameterType="map" resultType="map">
-		select * from t_match
-		where score_result!='end'
+		select t1.* from t_match t1
+		inner join v_season v1 on v1.id=t1.season_id
+				where t1.score_result!='end'
+		     and t1.score_result !='延期'
+		     and t1.gameTime &lt;= DATE_FORMAT(NOW(),'%m-%d %T')
+		ORDER BY t1.gameTime asc
 	</select>
 	<select id="queryCountryOne" parameterType="map" resultType="map">
 		select * From t_country
