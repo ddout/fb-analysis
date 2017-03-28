@@ -1,6 +1,5 @@
 package com.ddout.fb.service.mysql;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +22,10 @@ public interface ISaveDataService {
 
     Map<String, Object> queryZucaiMatchForOddsURI(String odds_info_uri);
 
-    void saveZucai14Match(HashMap<String, Object> hashMap);
+    void saveZucai14Match(Map<String, Object> hashMap);
 
     void updateLastUpdateTime();
+
+    String queryMaxZucaiNo();
 
 }

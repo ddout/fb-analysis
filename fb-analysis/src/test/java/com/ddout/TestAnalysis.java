@@ -16,7 +16,7 @@ public class TestAnalysis {
     @Autowired
     private IAnalysisService service;
 
-    public static String matchId = "817320";//"877160";// "877278";
+    public static String matchId = "102212";//"817402";
 
     @Test
     public void testAnalysis() {

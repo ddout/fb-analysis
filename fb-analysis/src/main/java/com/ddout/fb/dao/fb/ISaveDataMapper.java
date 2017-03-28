@@ -1,6 +1,5 @@
 package com.ddout.fb.dao.fb;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ public interface ISaveDataMapper {
 
     void saveTeam(Map<String, Object> teamMap);
 
-    void saveSeasonTeam(HashMap<String, Object> hashMap);
+    void saveSeasonTeam(Map<String, Object> hashMap);
 
     Map<String, Object> queryMatchOne(Map<String, Object> matchMap);
 
@@ -42,10 +41,12 @@ public interface ISaveDataMapper {
 
     Map<String, Object> queryZucaiMatchForOddsURI(String odds_info_uri);
 
-    void saveZucai14Match(HashMap<String, Object> hashMap);
+    void saveZucai14Match(Map<String, Object> hashMap);
 
-    Map<String, Object> queryZucai14Match(HashMap<String, Object> hashMap);
+    Map<String, Object> queryZucai14Match(Map<String, Object> hashMap);
 
     void updateLastUpdateTime();
+
+    String queryMaxZucaiNo();
 
 }

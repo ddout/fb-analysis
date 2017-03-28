@@ -408,54 +408,9 @@ public class CrawlerServiceImpl implements ICrawlerService {
     @Override
     public void parseZucai14() {
 	try {
-	    Connection conn = getConnect(ICust.BASE_ZUCAI_14);// 获取请求连接
-	    conn.header("Referer", ICust.BASE_PATH);
-	    Document doc = conn.get();
-	    //
-	    Element a = doc.select("div.dqrm a").get(0);
-	    final String zucai_no = a.html().replaceAll("期", "");
-
-	    int noCount = saveDataService.queryZucaiNoCount(zucai_no);
-	    if (noCount >= 14) {
-		return;
-	    }
-	    final String end_time = doc.select("div.overTime em").get(0).html();
-	    Elements tableTr = doc.select("#gametablesend table.jcmaintable tr");
-	    for (Element tr : tableTr) {
-		try {
-		    Elements tds = tr.select("td");
-		    final String odds_info_uri = tds.get(5).select("a.jsOupei").attr("href");
-		    Map<String, Object> matchInfo = saveDataService.queryZucaiMatchForOddsURI(odds_info_uri);
-		    if (null == matchInfo || matchInfo.size() == 0) {
-			continue;
-		    }
-		    //
-		    final String matchId = ParamsUtil.getString4Map(matchInfo, "id");
-		    final int idx = Integer.parseInt(tds.get(0).html());
-		    final String leagueName = ParamsUtil.getString4Map(matchInfo, "leagueName");
-		    final String gameTime = tds.get(2).attr("title").replaceAll("比赛时间:", "");
-		    final String homeTeam = ParamsUtil.getString4Map(matchInfo, "home_team");
-		    final String awayTeam = ParamsUtil.getString4Map(matchInfo, "away_team");
-		    //
-		    saveDataService.saveZucai14Match(new HashMap<String, Object>() {
-			private static final long serialVersionUID = -4558754925326428492L;
-
-			{
-			    put("zucai_no", zucai_no);
-			    put("end_time", end_time);
-			    put("idx", idx);
-			    put("leagueName", leagueName);
-			    put("home_team", homeTeam);
-			    put("away_team", awayTeam);
-			    put("match_id", matchId);
-			    put("odds_info_uri", odds_info_uri);
-			    put("gameTime", gameTime);
-			}
-		    });
-		} catch (Exception e) {
-		    logger.error("parse Zucai14-tr error", e);
-		}
-	    }
+	    String no = saveDataService.queryMaxZucaiNo();
+	    String no2 = (Integer.parseInt(no) + 1) + "";
+	    parseZucai14Old(no2);
 
 	} catch (Exception e) {
 	    logger.error("parse Zucai14 is errot", e);
@@ -468,53 +423,64 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	    Connection conn = getConnect(ICust.BASE_ZUCAI_14 + "/" + no + "/");// 获取请求连接
 	    conn.header("Referer", ICust.BASE_PATH);
 	    Document doc = conn.get();
-	    //
-	    final String zucai_no = doc.getElementById("topLotteryNo").attr("title").replace("期", "");
-
-	    int noCount = saveDataService.queryZucaiNoCount(zucai_no);
-	    if (noCount >= 14) {
-		return;
-	    }
-	    final String end_time = doc.select("div.overTime em").get(0).html();
-	    Elements tableTr = doc.select("#gametablesend table.jcmaintable tr");
-	    for (Element tr : tableTr) {
-		try {
-		    Elements tds = tr.select("td");
-		    final String odds_info_uri = tds.get(5).select("a.jsOupei").attr("href");
-		    Map<String, Object> matchInfo = saveDataService.queryZucaiMatchForOddsURI(odds_info_uri);
-		    if (null == matchInfo || matchInfo.size() == 0) {
-			continue;
-		    }
-		    //
-		    final String matchId = ParamsUtil.getString4Map(matchInfo, "id");
-		    final int idx = Integer.parseInt(tds.get(0).html());
-		    final String leagueName = ParamsUtil.getString4Map(matchInfo, "leagueName");
-		    final String gameTime = tds.get(2).attr("title").replaceAll("比赛时间:", "");
-		    final String homeTeam = ParamsUtil.getString4Map(matchInfo, "home_team");
-		    final String awayTeam = ParamsUtil.getString4Map(matchInfo, "away_team");
-		    //
-		    saveDataService.saveZucai14Match(new HashMap<String, Object>() {
-			private static final long serialVersionUID = -4558754925326428492L;
-
-			{
-			    put("zucai_no", zucai_no);
-			    put("end_time", end_time);
-			    put("idx", idx);
-			    put("leagueName", leagueName);
-			    put("home_team", homeTeam);
-			    put("away_team", awayTeam);
-			    put("match_id", matchId);
-			    put("odds_info_uri", odds_info_uri);
-			    put("gameTime", gameTime);
-			}
-		    });
-		} catch (Exception e) {
-		    logger.error("parse Zucai14-tr error", e);
-		}
-	    }
+	    parseZucai14Info(doc);
 
 	} catch (Exception e) {
 	    logger.error("parse Zucai14 is errot", e);
+	}
+    }
+
+    private void parseZucai14Info(Document doc) {
+	//
+	final String zucai_no = doc.getElementById("topLotteryNo").attr("title").replace("期", "");
+
+	int noCount = saveDataService.queryZucaiNoCount(zucai_no);
+	if (noCount >= 14) {
+	    return;
+	}
+	final String end_time = doc.select("div.overTime em").get(0).html();
+	Elements tableTr = doc.select("#gametablesend table.jcmaintable tr");
+	for (Element tr : tableTr) {
+	    try {
+		Elements tds = tr.select("td");
+		final String odds_info_uri = tds.get(5).select("a.jsOupei").attr("href");
+		Map<String, Object> matchInfo = saveDataService.queryZucaiMatchForOddsURI(odds_info_uri);
+		//
+		final int idx = Integer.parseInt(tds.get(0).html());
+		final String gameTime = tds.get(2).attr("title").replaceAll("比赛时间:", "");
+		//
+		Map<String, Object> matchMap = new HashMap<String, Object>();
+		if (null == matchInfo || matchInfo.size() == 0) {
+		    matchMap.put("zucai_no", zucai_no);
+		    matchMap.put("end_time", end_time);
+		    matchMap.put("idx", idx);
+		    matchMap.put("leagueName", tds.get(1).select("a").html());
+		    String homeTeam = tds.get(3).select("span.homename").html();
+		    matchMap.put("home_team", homeTeam);
+		    String awayTeam = tds.get(3).select("span.awayname").html();
+		    matchMap.put("away_team", awayTeam);
+		    matchMap.put("match_id", "");
+		    matchMap.put("odds_info_uri", odds_info_uri);
+		    matchMap.put("gameTime", gameTime);
+		} else {
+		    String matchId = ParamsUtil.getString4Map(matchInfo, "id");
+		    String leagueName = ParamsUtil.getString4Map(matchInfo, "leagueName");
+		    String homeTeam = ParamsUtil.getString4Map(matchInfo, "home_team");
+		    String awayTeam = ParamsUtil.getString4Map(matchInfo, "away_team");
+		    matchMap.put("zucai_no", zucai_no);
+		    matchMap.put("end_time", end_time);
+		    matchMap.put("idx", idx);
+		    matchMap.put("leagueName", leagueName);
+		    matchMap.put("home_team", homeTeam);
+		    matchMap.put("away_team", awayTeam);
+		    matchMap.put("match_id", matchId);
+		    matchMap.put("odds_info_uri", odds_info_uri);
+		    matchMap.put("gameTime", gameTime);
+		}
+		saveDataService.saveZucai14Match(matchMap);
+	    } catch (Exception e) {
+		logger.error("parse Zucai14-tr error", e);
+	    }
 	}
     }
 }

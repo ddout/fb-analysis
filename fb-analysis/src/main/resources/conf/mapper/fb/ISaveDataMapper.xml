@@ -243,8 +243,17 @@
 		select * from t_zucai_14
 		where match_id=#{match_id}
 		and zucai_no=#{zucai_no}
+		and odds_info_uri=#{odds_info_uri}
 	</select>
-
+	
+	<select id="queryMaxZucaiNo" parameterType="map" resultType="string">
+		select MAX(t.zucai_no) from (
+			select 
+			zucai_no
+			from t_zucai_14
+			where DATE_FORMAT(STR_TO_DATE(end_time,'%m-%d'),'%m-%d')=DATE_FORMAT(STR_TO_DATE('03-28','%m-%d'),'%m-%d')
+		) t
+	</select>
 	<insert id="saveZucai14Match" parameterType="map"
 		useGeneratedKeys="true" keyProperty="id">
 		insert into t_zucai_14

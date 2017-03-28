@@ -341,7 +341,7 @@ public class SaveDataServiceImpl implements ISaveDataService {
     }
 
     @Override
-    public void saveZucai14Match(HashMap<String, Object> hashMap) {
+    public void saveZucai14Match(Map<String, Object> hashMap) {
 	Map<String, Object> matchInfo = mapper.queryZucai14Match(hashMap);
 	if (null == matchInfo || matchInfo.size() == 0) {
 	    mapper.saveZucai14Match(hashMap);
@@ -351,6 +351,11 @@ public class SaveDataServiceImpl implements ISaveDataService {
     @Override
     public void updateLastUpdateTime() {
 	mapper.updateLastUpdateTime();	
+    }
+
+    @Override
+    public String queryMaxZucaiNo() {
+	return mapper.queryMaxZucaiNo();	
     }
 
 }

@@ -34,7 +34,7 @@ public class AnalysisServiceImpl implements IAnalysisService {
 	// result.put("idx_analysis", execIdxAnalysis(matchId));// 指数分析结果
 	BigDecimal[] kiliy = Killy(matchId);
 	int idx_analysis = killyResult(kiliy);
-	log.info("凯利方差结果："+idx_analysis);
+	log.info("凯利方差结果：" + idx_analysis);
 	result.put("idx_analysis", idx_analysis);// 指数分析结果
 	return result;
     }
@@ -63,8 +63,8 @@ public class AnalysisServiceImpl implements IAnalysisService {
 	// TODO 指数分析结果
 	// 获取凯利方差离散值
 	BigDecimal[] kiliy = Killy(matchId);
-	log.info("凯利方差结果："+killyResult(kiliy));
-	return null;
+	log.info("凯利方差结果：" + killyResult(kiliy));
+	return kiliy;
     }
 
     @Override
@@ -186,22 +186,20 @@ public class AnalysisServiceImpl implements IAnalysisService {
 		try {
 		    final BigDecimal[] kiliy = Killy(ParamsUtil.getString4Map(match, "id"));
 		    final int killyResult = killyResult(kiliy);
-		    if (!("" + killyResult).equals(matchResult)) {
-			final String matchId = ParamsUtil.getString4Map(match, "id");
-			mapper.saveAnalysisView1(new HashMap<String, Object>() {
-			    private static final long serialVersionUID = -737490257722803154L;
+		    final String matchId = ParamsUtil.getString4Map(match, "id");
+		    mapper.saveAnalysisView1(new HashMap<String, Object>() {
+			private static final long serialVersionUID = -737490257722803154L;
 
-			    {
-				put("matchId", matchId);
-				put("killyResult", killyResult);
-				put("matchResult", matchResult);
-				//
-				put("killy_home", kiliy[0]);
-				put("killy_draw", kiliy[1]);
-				put("killy_away", kiliy[2]);
-			    }
-			});
-		    }
+			{
+			    put("matchId", matchId);
+			    put("killyResult", killyResult);
+			    put("matchResult", matchResult);
+			    //
+			    put("killy_home", kiliy[0]);
+			    put("killy_draw", kiliy[1]);
+			    put("killy_away", kiliy[2]);
+			}
+		    });
 		} catch (BizException e) {
 		    log.debug(e.getMessage());
 		} catch (Exception e) {

@@ -62,7 +62,7 @@
 			group by zucai_no
 		) t
 		order by t.zucai_no desc
-		limit 0,5
+		limit 0,10
 	</select>
 	
 	<select id="queryZucai14ForNo" parameterType="string" resultType="map">
