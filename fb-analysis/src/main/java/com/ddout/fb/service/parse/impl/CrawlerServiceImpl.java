@@ -419,7 +419,7 @@ public class CrawlerServiceImpl implements ICrawlerService {
 
     @Override
     public void parseZucai14Old(String no) {
-	try {
+	try {//no="17043"
 	    Connection conn = getConnect(ICust.BASE_ZUCAI_14 + "/" + no + "/");// 获取请求连接
 	    conn.header("Referer", ICust.BASE_PATH);
 	    Document doc = conn.get();
@@ -434,10 +434,10 @@ public class CrawlerServiceImpl implements ICrawlerService {
 	//
 	final String zucai_no = doc.getElementById("topLotteryNo").attr("title").replace("期", "");
 
-	int noCount = saveDataService.queryZucaiNoCount(zucai_no);
-	if (noCount >= 14) {
-	    return;
-	}
+//	int noCount = saveDataService.queryZucaiNoCount(zucai_no);
+//	if (noCount >= 14) {
+//	    return;
+//	}
 	final String end_time = doc.select("div.overTime em").get(0).html();
 	Elements tableTr = doc.select("#gametablesend table.jcmaintable tr");
 	for (Element tr : tableTr) {

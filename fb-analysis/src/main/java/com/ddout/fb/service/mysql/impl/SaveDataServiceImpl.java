@@ -342,10 +342,12 @@ public class SaveDataServiceImpl implements ISaveDataService {
 
     @Override
     public void saveZucai14Match(Map<String, Object> hashMap) {
-	Map<String, Object> matchInfo = mapper.queryZucai14Match(hashMap);
-	if (null == matchInfo || matchInfo.size() == 0) {
-	    mapper.saveZucai14Match(hashMap);
-	}
+//	Map<String, Object> matchInfo = mapper.queryZucai14Match(hashMap);
+//	if (null == matchInfo || matchInfo.size() == 0) {
+//	    
+//	}
+	mapper.deleteZucai14Match(hashMap);
+	mapper.saveZucai14Match(hashMap);
     }
 
     @Override

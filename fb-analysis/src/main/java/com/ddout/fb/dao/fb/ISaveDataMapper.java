@@ -49,4 +49,6 @@ public interface ISaveDataMapper {
 
     String queryMaxZucaiNo();
 
+    void deleteZucai14Match(Map<String, Object> hashMap);
+
 }

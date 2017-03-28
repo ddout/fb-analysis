@@ -246,6 +246,13 @@
 		and odds_info_uri=#{odds_info_uri}
 	</select>
 	
+	<delete id="deleteZucai14Match" parameterType="map">
+		delete from t_zucai_14
+		where match_id=#{match_id}
+		and zucai_no=#{zucai_no}
+		and odds_info_uri=#{odds_info_uri}
+	</delete>
+	
 	<select id="queryMaxZucaiNo" parameterType="map" resultType="string">
 		select MAX(t.zucai_no) from (
 			select 
