@@ -28,4 +28,35 @@
 		(#{matchId},#{killyResult},#{matchResult},
 		#{killy_home,jdbcType=NUMERIC},#{killy_draw,jdbcType=NUMERIC},#{killy_away,jdbcType=NUMERIC})
 	</insert>
+	
+	<select id="queryHomeAndHomeState" parameterType="string" resultType="map">
+		select t1.* 
+		from t_match t1
+		,
+			(
+			select * from t_match
+			where id=#{matchId}
+			) t2
+		where t1.home_team=t2.home_team
+		  and t1.leagueName=t2.leagueName
+		  and t1.season_id=t2.season_id
+		  and t1.score_result='end'
+		ORDER BY (t1.roundName+0) asc
+		limit 0,30
+	</select>
+	<select id="queryAwayAndAwayState" parameterType="string" resultType="map">
+		select t1.* 
+		from t_match t1
+		,
+			(
+			select * from t_match
+			where id=#{matchId}
+			) t2
+		where t1.away_team=t2.away_team
+		  and t1.leagueName=t2.leagueName
+		  and t1.season_id=t2.season_id
+		  and t1.score_result='end'
+		ORDER BY (t1.roundName+0) asc
+		limit 0,30
+	</select>
 </mapper>

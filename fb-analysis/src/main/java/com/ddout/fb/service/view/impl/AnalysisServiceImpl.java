@@ -16,6 +16,8 @@ import com.cdhy.commons.utils.exception.BizException;
 import com.ddout.fb.dao.fb.IAnalysisMapper;
 import com.ddout.fb.service.view.IAnalysisService;
 
+import net.sf.json.JSONObject;
+
 @Service
 public class AnalysisServiceImpl implements IAnalysisService {
     private static final Logger log = Logger.getLogger(AnalysisServiceImpl.class);
@@ -27,15 +29,27 @@ public class AnalysisServiceImpl implements IAnalysisService {
 	// TODO 这里应该是把其他的分析结果综合起来，按照一定的权重，综合得出分析结果(可以按照百分比呈现)
 	// 目前想到6种
 	Map<String, Object> result = new HashMap<String, Object>();
-	// result.put("analysis", execAnalysis(matchId));// 最终分析结果--包含实际结果的对比
 	// result.put("his_battle", execHisBattle(matchId));// 历史交锋分析结果
 	// result.put("home_state", execHomeState(matchId));// 最近比赛状态分析(主)
 	// result.put("away_state", execAwayState(matchId));// 最近比赛状态分析(客)
 	// result.put("idx_analysis", execIdxAnalysis(matchId));// 指数分析结果
-	BigDecimal[] kiliy = Killy(matchId);
-	int idx_analysis = killyResult(kiliy);
-	log.info("凯利方差结果：" + idx_analysis);
-	result.put("idx_analysis", idx_analysis);// 指数分析结果
+	try {
+	    BigDecimal[] kiliy = Killy(matchId);
+	    int idx_analysis = killyResult(kiliy);
+	    log.info("凯利方差结果：" + idx_analysis);
+	    result.put("killy_result", kiliy);
+	    //
+	    execHomeState(matchId);
+	    execAwayState(matchId);
+	    //5==0.3846   6==0.4615 15==1.0000
+	    //20==1.3333 20==1.3333 20==1.3333
+	    result.put("analysis_result_1", idx_analysis);// 最终结果1
+	    result.put("analysis_result_2", idx_analysis);// 最终结果2
+	} catch (Exception e) {
+	    result.put("analysis_result_1", "-1");// 指数分析结果
+	    result.put("analysis_result_2", "-1");// 指数分析结果
+	}
+
 	return result;
     }
 
@@ -46,15 +60,85 @@ public class AnalysisServiceImpl implements IAnalysisService {
 	return null;
     }
 
+    /**
+     * 最近比赛状态分析(主)
+     */
     @Override
     public Object execHomeState(String matchId) {
 	// TODO 最近比赛状态分析(主)
+	int score = 0;
+	// 主队在主场--的情况
+	List<Map<String, Object>> list = mapper.queryHomeAndHomeState(matchId);
+	for (Map<String, Object> map : list) {
+	    String match_result = ParamsUtil.getString4Map(map, "match_result");
+	    BigDecimal[] kiliy = Killy(ParamsUtil.getString4Map(map, "id"));
+	    int idx_analysis = killyResult(kiliy);
+	    log.info("实际比赛结果：" + match_result);
+	    log.info("凯利方差结果：" + idx_analysis);
+	    //
+	    if (idx_analysis == 0) {
+		if ("1".equals(match_result)) {
+		    score += 1;
+		} else if ("3".equals(match_result)) {
+		    score += 3;
+		}
+	    } else if (idx_analysis == 1) {
+		if ("3".equals(match_result)) {
+		    score += 1;
+		} else if ("0".equals(match_result)) {
+		    score += 1;
+		}
+	    } else if (idx_analysis == 3) {
+		if ("0".equals(match_result)) {
+		    score += 3;
+		} else if ("1".equals(match_result)) {
+		    score += 1;
+		}
+	    }
+	}
+	BigDecimal aa = new BigDecimal(score).divide(new BigDecimal(list.size()), 4, RoundingMode.HALF_UP);
+	System.out.println(score + "==" + (aa));
 	return null;
     }
 
+    /**
+     * 最近比赛状态分析(客)
+     */
     @Override
     public Object execAwayState(String matchId) {
 	// TODO 最近比赛状态分析(客)
+	int score = 0;
+	// 客队在主场--的情况
+	List<Map<String, Object>> list = mapper.queryAwayAndAwayState(matchId);
+	for (Map<String, Object> map : list) {
+	    String match_result = ParamsUtil.getString4Map(map, "match_result");
+	    BigDecimal[] kiliy = Killy(ParamsUtil.getString4Map(map, "id"));
+	    int idx_analysis = killyResult(kiliy);
+	    log.info("实际比赛结果：" + match_result);
+	    log.info("凯利方差结果：" + idx_analysis);
+	    //
+	    if (idx_analysis == 0) {
+		if ("1".equals(match_result)) {
+		    score += 1;
+		} else if ("3".equals(match_result)) {
+		    score += 3;
+		}
+	    } else if (idx_analysis == 1) {
+		if ("3".equals(match_result)) {
+		    score += 1;
+		} else if ("0".equals(match_result)) {
+		    score += 1;
+		}
+	    } else if (idx_analysis == 3) {
+		if ("0".equals(match_result)) {
+		    score += 3;
+		} else if ("1".equals(match_result)) {
+		    score += 1;
+		}
+	    }
+	}
+	BigDecimal aa = new BigDecimal(score).divide(new BigDecimal(list.size()), 4, RoundingMode.HALF_UP);
+	System.out.println(score + "==" + (aa));
 	return null;
     }
 
@@ -67,12 +151,18 @@ public class AnalysisServiceImpl implements IAnalysisService {
 	return kiliy;
     }
 
+    /**
+     * 同类型赛事情况(主队)
+     */
     @Override
     public Object execSameLeagueHome(String matchId) {
 	// TODO Auto-generated method stub
 	return null;
     }
 
+    /**
+     * 同类型赛事情况(客队)
+     */
     @Override
     public Object execSameLeagueAway(String matchId) {
 	// TODO Auto-generated method stub

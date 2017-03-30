@@ -255,10 +255,10 @@
 					<td class="text-left">{{match.home_team}}[{{match.home_score}}]</td>
 					<td class="text-left">[{{match.away_score}}]{{match.away_team}}</td>
 				</tr>
-				<tr v-bind:class="{heightBg:match.analysis.idx_analysis == match.match_result}">
+				<tr v-bind:class="{heightBg:match.analysis.analysis_result_1 == match.match_result}">
 					<td class="text-right">result:</td>
 					<td class="text-left">{{match.match_result}}</td>
-					<td class="text-left">{{match.analysis.idx_analysis}}</td>
+					<td class="text-left">{{match.analysis.analysis_result_1}}</td>
 				</tr>
 			</table>
 		</div>
@@ -278,9 +278,9 @@
 		       				<th>主</th>
 		       				<th>客</th>
 		       			</tr>
-		       			<tr v-for="match in zucai14Info.matchs" v-bind:class="{heightBg:match.analysis.idx_analysis == match.match_result}">
+		       			<tr v-for="match in zucai14Info.matchs" v-bind:class="{heightBg:match.analysis.analysis_result_1 == match.match_result}">
 		       				<td>{{match.idx}}</td>
-		       				<td>{{match.analysis.idx_analysis}}[{{match.match_result}}]</td>
+		       				<td>{{match.analysis.analysis_result_1}}[{{match.match_result}}]</td>
 		       				<td>{{match.home_team}}[{{match.home_score}}]</td>
 		       				<td>[{{match.away_score}}]{{match.away_team}}</td>
 		       			</tr>

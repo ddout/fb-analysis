@@ -13,5 +13,7 @@ public interface IAnalysisMapper {
 
     void saveAnalysisView1(Map<String, Object> map);
 
+    List<Map<String, Object>> queryHomeAndHomeState(String matchId);
 
+    List<Map<String, Object>> queryAwayAndAwayState(String matchId);
 }
